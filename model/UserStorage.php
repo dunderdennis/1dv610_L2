@@ -1,5 +1,7 @@
 <?php
 
+namespace model;
+
 session_start();
 
 class UserStorage

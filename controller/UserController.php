@@ -1,6 +1,8 @@
 <?php
 
-class UserManagement
+namespace controller;
+
+class UserController
 {
     private $view;
     private $username;

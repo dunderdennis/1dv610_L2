@@ -1,7 +1,7 @@
 <?php
 
-require_once('controller/UserManagement.php');
-require_once('model/UserName.php.php');
+require_once('controller/UserController.php');
+require_once('model/UserName.php');
 require_once('model/UserStorage.php');
 require_once('view/LoginView.php');
 require_once('view/DateTimeView.php');
@@ -24,12 +24,16 @@ class Application
         $this->storage = new \model\UserStorage();
         $this->user = $this->storage->loadUser();
 
-        $this->layoutView = new LayoutView();
-        $this->dateTimeView = new DateTimeView();
-        $this->loginView = new LoginView();
-        $this->registerView = new RegisterView();
+        $this->layoutView = new \view\LayoutView();
+        $this->dateTimeView = new \view\DateTimeView();
+        $this->loginView = new \view\LoginView();
+        $this->registerView = new \view\RegisterView();
 
-        $this->controller = new UserManagement();
+        $this->controller = new  \controller\UserController($this->user, $this->layoutView);
+    }
+
+    public function run() {
+        $this->render();
     }
 
     public function render()

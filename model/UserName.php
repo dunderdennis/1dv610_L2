@@ -1,5 +1,7 @@
 <?php
 
+namespace model;
+
 class UserName
 {
     private static $minNameLength = 2;
