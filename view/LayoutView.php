@@ -4,6 +4,11 @@ namespace view;
 
 class LayoutView
 {
+  public function __construct($username)
+  {
+    $this->username = $username;
+  }
+
   /**
    * Render function for LayoutView class.
    *
@@ -23,7 +28,7 @@ class LayoutView
         </head>
         <body>
           <h1>Assignment 2</h1>
-          ' . $this->renderIsLoggedIn($isLoggedIn) . '
+          ' . $this->renderIsLoggedIn($isLoggedIn, $loginView) . '
           
           <div class="container">
               ' . $loginView->response() . '
@@ -44,7 +49,7 @@ class LayoutView
   private function renderIsLoggedIn(bool $isLoggedIn)
   {
     if ($isLoggedIn) {
-      return '<h2>Logged in</h2>';
+      return '<h2>Logged in as ' . $this->username . '</h2>';
     } else {
       return '<a href="?register">New user? Register HERE</a>
       <h2>Not logged in</h2>';

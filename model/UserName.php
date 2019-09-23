@@ -9,7 +9,6 @@ class UserName
 
     public function __construct(string $newName)
     {
-
         $this->username = $this->applyFilter($newName);
 
         if (strlen($this->username) < self::$minNameLength) {

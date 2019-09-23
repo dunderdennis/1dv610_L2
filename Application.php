@@ -11,7 +11,7 @@ require_once('view/RegisterView.php');
 class Application
 {
     private $storage;
-    private $user;
+    private $username;
     private $controller;
 
     private $layoutView;
@@ -22,14 +22,14 @@ class Application
     public function __construct()
     {
         $this->storage = new \model\UserStorage();
-        $this->user = $this->storage->loadUser();
+        $this->username = $this->storage->loadUser();
 
-        $this->layoutView = new \view\LayoutView();
+        $this->layoutView = new \view\LayoutView($this->username);
         $this->dateTimeView = new \view\DateTimeView();
         $this->loginView = new \view\LoginView();
         $this->registerView = new \view\RegisterView();
 
-        $this->controller = new  \controller\UserController($this->user, $this->layoutView);
+        $this->controller = new  \controller\UserController($this->username, $this->layoutView);
     }
 
     public function run() {

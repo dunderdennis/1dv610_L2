@@ -6,22 +6,17 @@ class LoginView
 {
 	private static $login = 'LoginView::Login';
 	private static $logout = 'LoginView::Logout';
-	private static $name = 'LoginView::UserName';
+	private static $username = 'LoginView::UserName';
 	private static $password = 'LoginView::Password';
 	private static $cookieName = 'LoginView::CookieName';
 	private static $cookiePassword = 'LoginView::CookiePassword';
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
 
+	private function userWantsToLogin() : bool {
+		return isset($_GET[self::$login]);
+	}
 
-
-	/**
-	 * Create HTTP response
-	 *
-	 * Should be called after a login attempt has been determined
-	 *
-	 * @return  void BUT writes to standard output and cookies!
-	 */
 	public function response()
 	{
 		$message = '';
@@ -31,11 +26,6 @@ class LoginView
 		return $response;
 	}
 
-	/**
-	 * Generate HTML code on the output buffer for the logout button
-	 * @param $message, String output message
-	 * @return  void, BUT writes to standard output!
-	 */
 	private function generateLogoutButtonHTML(string $message)
 	{
 		return '
@@ -46,11 +36,6 @@ class LoginView
 		';
 	}
 
-	/**
-	 * Generate HTML code on the output buffer for the logout button
-	 * @param $message, String output message
-	 * @return  void, BUT writes to standard output!
-	 */
 	private function generateLoginFormHTML($message)
 	{
 		return '
@@ -59,8 +44,8 @@ class LoginView
 					<legend>Login - enter Username and password</legend>
 					<p id="' . self::$messageId . '">' . $message . '</p>
 					
-					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="" />
+					<label for="' . self::$username . '">Username :</label>
+					<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="" />
 
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
@@ -78,5 +63,7 @@ class LoginView
 	private function getRequestUserName()
 	{
 		//RETURN REQUEST VARIABLE: USERNAME
+
+		return $_REQUEST[self::$username];
 	}
 }
