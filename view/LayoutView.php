@@ -19,7 +19,7 @@ class LayoutView
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Login Example</title>
+          <title>df222fx login app</title>
         </head>
         <body>
           <h1>Assignment 2</h1>
@@ -35,7 +35,13 @@ class LayoutView
     ';
   }
 
-  private function renderIsLoggedIn($isLoggedIn)
+  /**
+   * Handles rendering of Register-link and Logged in-text.
+   *
+   * @param boolean $isLoggedIn
+   * @return void
+   */
+  private function renderIsLoggedIn(bool $isLoggedIn)
   {
     if ($isLoggedIn) {
       return '<h2>Logged in</h2>';

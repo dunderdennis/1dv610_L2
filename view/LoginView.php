@@ -27,7 +27,7 @@ class LoginView
 		$message = '';
 
 		$response = $this->generateLoginFormHTML($message);
-		//$response .= $this->generateLogoutButtonHTML($message);
+		$response .= $this->generateLogoutButtonHTML($message);
 		return $response;
 	}
 
@@ -36,7 +36,7 @@ class LoginView
 	 * @param $message, String output message
 	 * @return  void, BUT writes to standard output!
 	 */
-	private function generateLogoutButtonHTML($message)
+	private function generateLogoutButtonHTML(string $message)
 	{
 		return '
 			<form  method="post" >
