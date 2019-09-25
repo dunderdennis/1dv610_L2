@@ -65,7 +65,7 @@ class LoginView
 					<p id="' . self::$messageId . '">' . $message . '</p>
 					
 					<label for="' . self::$username . '">Username :</label>
-					<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="" />
+					<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $_POST['username'] . '" />
 
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
@@ -91,7 +91,11 @@ class LoginView
 
 		if ($username == '') {
 			$this->postUsernameIsMissing = true;
-		} else if ($password == '') {
+		} else {
+			$_POST['username'] = $username;
+		}
+		
+		if ($password == '') {
 			$this->postPasswordIsMissing = true;
 		}
 	}
