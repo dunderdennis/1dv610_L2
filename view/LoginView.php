@@ -13,8 +13,8 @@ class LoginView
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
 
-	private $requestUsernameIsMissing = false;
-	private $requestPasswordIsMissing = false;
+	private $postUsernameIsMissing = false;
+	private $postPasswordIsMissing = false;
 
 	public function userWantsToLogin(): bool
 	{
@@ -41,7 +41,7 @@ class LoginView
 		}
 
 		$response = $this->generateLoginFormHTML($message);
-		$response .= $this->generateLogoutButtonHTML($message);
+		// $response .= $this->generateLogoutButtonHTML($message);
 
 		return $response;
 	}
@@ -86,17 +86,13 @@ class LoginView
 
 	private function checkLoginForErrors(): void
 	{
-		$username = $this->getGETUsername();
-		$password = $this->getGETPassword();
+		$username = $this->getPostUsername();
+		$password = $this->getPostPassword();
 
-		var_dump($username);
-		var_dump($password);
-
-		if (!isset($username)) {
-			$this->requestUsernameIsMissing = true;
-		}
-		if (!isset($password)) {
-			$this->requestPasswordIsMissing = true;
+		if ($username == '') {
+			$this->postUsernameIsMissing = true;
+		} else if ($password == '') {
+			$this->postPasswordIsMissing = true;
 		}
 	}
 
@@ -104,30 +100,23 @@ class LoginView
 	{
 		$message = '';
 
-		if ($this->requestUsernameIsMissing) {
+		if ($this->postUsernameIsMissing) {
 			$message = 'Username is missing';
+		}
+		if ($this->postPasswordIsMissing) {
+			$message = 'Password is missing';
 		}
 
 		return $message;
 	}
 
-	private function getRequestUsername()
+	private function getPostUsername()
 	{
-		return $_REQUEST[self::$username];
+		return $_POST[self::$username];
 	}
 
-	private function getRequestPassword()
+	private function getPostPassword()
 	{
-		return $_REQUEST[self::$password];
-	}
-
-	private function getGETUsername()
-	{
-		return $_GET[self::$username];
-	}
-
-	private function getGETPassword()
-	{
-		return $_GET[self::$password];
+		return $_POST[self::$password];
 	}
 }
