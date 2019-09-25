@@ -16,10 +16,29 @@ class LoginView
 	private $requestUsernameIsMissing = false;
 	private $requestPasswordIsMissing = false;
 
+	public function userWantsToLogin(): bool
+	{
+		return isset($_GET[self::$username]);
+	}
+
 	public function response()
 	{
 		$message = '';
-		$this->checkLoginRequestForErrors();
+
+		var_dump(isset($_POST));
+		var_dump(isset($_POST[self::$login]));
+
+		echo 'POST: ';
+		var_dump(isset($_POST));
+		echo 'REQUEST: ';
+		var_dump(isset($_REQUEST));
+		echo 'GET: ';
+		var_dump(isset($_GET));
+
+		if ($this->getGETUsername()) {
+			var_dump($this->getGETUsername());
+		}
+
 		$message = $this->getLoginErrorMessage();
 
 		$response = $this->generateLoginFormHTML($message);
@@ -61,10 +80,10 @@ class LoginView
 		';
 	}
 
-	private function checkLoginRequestForErrors(): void
+	private function checkLoginGETForErrors(): void
 	{
-		$username = $this->getRequestUsername();
-		$password = $this->getRequestPassword();
+		$username = $this->getGETUsername();
+		$password = $this->getGETPassword();
 
 		var_dump($username);
 		var_dump($password);
