@@ -18,14 +18,12 @@ class LoginView
 
 	public function userWantsToLogin(): bool
 	{
-		return isset($_GET[self::$username]);
+		return isset($_POST[self::$login]);
 	}
 
 	public function response()
 	{
-		$message = '';
-
-		var_dump(isset($_POST));
+		/* var_dump(isset($_POST));
 		var_dump(isset($_POST[self::$login]));
 
 		echo 'POST: ';
@@ -33,13 +31,14 @@ class LoginView
 		echo 'REQUEST: ';
 		var_dump(isset($_REQUEST));
 		echo 'GET: ';
-		var_dump(isset($_GET));
+		var_dump(isset($_GET)); */
 
-		if ($this->getGETUsername()) {
-			var_dump($this->getGETUsername());
+		$message = '';
+
+		if ($this->userWantsToLogin()) {
+			$this->doLoginAttempt();
+			$message = $this->getLoginErrorMessage();
 		}
-
-		$message = $this->getLoginErrorMessage();
 
 		$response = $this->generateLoginFormHTML($message);
 		$response .= $this->generateLogoutButtonHTML($message);
@@ -80,7 +79,12 @@ class LoginView
 		';
 	}
 
-	private function checkLoginGETForErrors(): void
+	private function doLoginAttempt(): void
+	{
+		$this->checkLoginForErrors();
+	}
+
+	private function checkLoginForErrors(): void
 	{
 		$username = $this->getGETUsername();
 		$password = $this->getGETPassword();

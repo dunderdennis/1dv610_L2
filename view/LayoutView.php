@@ -55,7 +55,7 @@ class LayoutView
     if ($isLoggedIn) {
       return '<h2>Logged in as ' . $this->username . '</h2>';
     } else {
-      return '<a href="?register">New user? Register HERE</a>
+      return '<a href="?register">Register a new user</a>
       <h2>Not logged in</h2>';
     }
   }
