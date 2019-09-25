@@ -111,8 +111,7 @@ class LoginView
 
 		if ($this->postUsernameIsMissing) {
 			$message = 'Username is missing';
-		}
-		if ($this->postPasswordIsMissing) {
+		} else if ($this->postPasswordIsMissing) {
 			$message = 'Password is missing';
 		}
 
