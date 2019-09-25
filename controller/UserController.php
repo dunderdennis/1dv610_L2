@@ -4,13 +4,21 @@ namespace controller;
 
 class UserController
 {
-    private $view;
     private $username;
+    private $layoutView;
 
-    public function __construct(\model\Username $username, \view\LayoutView $view) {
+    public function __construct(\model\Username $username, \view\LayoutView $layoutView)
+    {
         $this->username = $username;
-        $this->view = $view;
+        $this->layoutView = $layoutView;
     }
 
-    public function doSomething() {}
- }
+    public function doUserLogin()
+    {
+        if ($this->layoutView->userWantsToLogin) {
+            try {
+                $this->layoutView->logInUser($this->username);
+            } catch (\Exception $e) { }
+        }
+    }
+}

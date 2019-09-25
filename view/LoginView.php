@@ -13,16 +13,18 @@ class LoginView
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
 
-	private function userWantsToLogin() : bool {
-		return isset($_GET[self::$login]);
-	}
+	private $requestUsernameIsMissing = false;
+	private $requestPasswordIsMissing = false;
 
 	public function response()
 	{
 		$message = '';
+		$this->checkLoginRequestForErrors();
+		$message = $this->getLoginErrorMessage();
 
 		$response = $this->generateLoginFormHTML($message);
 		$response .= $this->generateLogoutButtonHTML($message);
+
 		return $response;
 	}
 
@@ -59,11 +61,38 @@ class LoginView
 		';
 	}
 
-	//CREATE GET-FUNCTIONS TO FETCH REQUEST VARIABLES
-	private function getRequestUserName()
-	{
-		//RETURN REQUEST VARIABLE: USERNAME
+	private function checkLoginRequestForErrors(): void {
+		$username = $this->getRequestUsername();
+		$password = $this->getRequestPassword();
 
+		if (isset($username)) {
+			$this->requestUsernameIsMissing = false;
+		}
+	}
+
+	private function getLoginErrorMessage(): string
+	{
+		$message = '';
+
+		if ($this->requestUsernameIsMissing) {
+			$message = 'Username is missing';
+		}
+
+		return $message;
+	}
+
+	public function setrequestUsernameIsMissing()
+	{
+		$this->requestUsernameIsMissing = true;
+	}
+
+	private function getRequestUsername()
+	{
 		return $_REQUEST[self::$username];
+	}
+
+	private function getRequestPassword()
+	{
+		return $_REQUEST[self::$password];
 	}
 }

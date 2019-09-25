@@ -4,9 +4,13 @@ namespace view;
 
 class LayoutView
 {
+  private $username;
+  private $userWantsToLogin;
+
   public function __construct($username)
   {
     $this->username = $username;
+    $this->userWantsToLogin = false;
   }
 
   /**
