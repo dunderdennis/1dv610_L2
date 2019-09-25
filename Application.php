@@ -32,12 +32,18 @@ class Application
         $this->controller = new  \controller\UserController($this->user, $this->layoutView);
     }
 
-    public function run() {
+    public function run()
+    {
         $this->render();
     }
 
-    public function render()
+    private function isLoggedIn(): bool
     {
-        $this->layoutView->render(false, $this->loginView, $this->dateTimeView, $this->registerView);
+        return isset($this->user);
+    }
+
+    private function render()
+    {
+        $this->layoutView->response($this->isLoggedIn(), $this->loginView, $this->dateTimeView, $this->registerView);
     }
 }

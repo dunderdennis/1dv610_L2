@@ -7,10 +7,15 @@ class LayoutView
   private $username;
   private $userWantsToLogin;
 
-  public function __construct($username)
+  public function __construct($user)
   {
-    $this->username = $username;
+    $this->user = $user;
     $this->userWantsToLogin = false;
+  }
+
+  private function userWantsToRegister(): bool
+  {
+    return isset($_REQUEST['register']);
   }
 
   /**
@@ -22,8 +27,15 @@ class LayoutView
    * @param RegisterView $registerView
    * @return void
    */
-  public function render(bool $isLoggedIn, LoginView $loginView, DateTimeView $dateTimeView, RegisterView $registerView)
+  public function response(bool $isLoggedIn, LoginView $loginView, DateTimeView $dateTimeView, RegisterView $registerView): void
   {
+    $viewToDisplay = '';
+    if ($this->userWantsToRegister()) {
+      $viewToDisplay = $registerView->response();
+    } else {
+      $viewToDisplay = $loginView->response();
+    }
+
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -32,10 +44,11 @@ class LayoutView
         </head>
         <body>
           <h1>Assignment 2</h1>
-          ' . $this->renderIsLoggedIn($isLoggedIn, $loginView) . '
+          ' . $this->renderRegisterLink($this->userWantsToRegister()) . '
+          ' . $this->renderIsLoggedIn($isLoggedIn) . '
           
           <div class="container">
-              ' . $loginView->response() . '
+              ' . $viewToDisplay . '
               
               ' . $dateTimeView->show() . '
           </div>
@@ -45,18 +58,32 @@ class LayoutView
   }
 
   /**
-   * Handles rendering of Register-link and Logged in-text.
+   * Handles rendering of Register-link.
+   *
+   * @param boolean $userWantsToRegister
+   * @return string
+   */
+  private function renderRegisterLink(bool $userWantsToRegister)
+  {
+    if ($userWantsToRegister) {
+      return '<a href="?">Back to login</a>';
+    } else {
+      return '<a href="?register">Register a new user</a>';
+    }
+  }
+
+  /**
+   * Handles rendering of Logged in-text.
    *
    * @param boolean $isLoggedIn
-   * @return void
+   * @return string
    */
-  private function renderIsLoggedIn(bool $isLoggedIn)
+  private function renderIsLoggedIn(bool $isLoggedIn): string
   {
     if ($isLoggedIn) {
-      return '<h2>Logged in as ' . $this->username . '</h2>';
+      return '<h2>Logged in as ' . $this->user->getUsername() . '</h2>';
     } else {
-      return '<a href="?register">Register a new user</a>
-      <h2>Not logged in</h2>';
+      return '<h2>Not logged in</h2>';
     }
   }
 }

@@ -6,11 +6,13 @@ session_start();
 
 class UserStorage
 {
+    private static $SESSION_KEY =  __CLASS__ .  "::User";
 
-    private static $SESSION_KEY =  __CLASS__ .  "::UserName";
-
+    
     public function loadUser()
     {
+        echo 'ACCESSING $_SESSION IN UserStorage:';
+        var_dump($_SESSION);
         if (isset($_SESSION[self::$SESSION_KEY])) {
             return $_SESSION[self::$SESSION_KEY];
         } else {
@@ -18,7 +20,7 @@ class UserStorage
         }
     }
 
-    public function saveUser(UserName $toBeSaved)
+    public function saveUser(User $toBeSaved)
     {
         $_SESSION[self::$SESSION_KEY] = $toBeSaved;
     }

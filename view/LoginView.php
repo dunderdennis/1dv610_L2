@@ -17,10 +17,14 @@ class LoginView
 	private $postPasswordIsMissing = false;
 	private $usernameFieldValue = '';
 
-	public function userWantsToLogin(): bool
+
+
+	public function userPressesLoginButton(): bool
 	{
 		return isset($_POST[self::$login]);
 	}
+
+
 
 	public function response()
 	{
@@ -34,32 +38,30 @@ class LoginView
 		echo 'GET: ';
 		var_dump(isset($_GET)); */
 
+		$response = '';
 		$message = '';
 
-		if (isset($_POST[self::$username])) {
-			$this->usernameFieldValue = $_POST[self::$username];
+
+		if ($this->userIsLoggedIn) { 
+			$response .= $this->generateLogoutButtonHTML($message);
+		} else {
+			if (isset($_POST[self::$username])) {
+				$this->usernameFieldValue = $_POST[self::$username];
+			}
+
+			if ($this->userPressesLoginButton()) {
+				$this->doLoginAttempt();
+				$message = $this->getLoginErrorMessage();
+			}
+
+			$response .= $this->generateLoginFormHTML($message);
+			
 		}
-
-		if ($this->userWantsToLogin()) {
-			$this->doLoginAttempt();
-			$message = $this->getLoginErrorMessage();
-		}
-
-		$response = $this->generateLoginFormHTML($message);
-		// $response .= $this->generateLogoutButtonHTML($message);
-
 		return $response;
 	}
 
-	private function generateLogoutButtonHTML(string $message)
-	{
-		return '
-			<form  method="post" >
-				<p id="' . self::$messageId . '">' . $message . '</p>
-				<input type="submit" name="' . self::$logout . '" value="logout"/>
-			</form>
-		';
-	}
+
+
 
 	private function generateLoginFormHTML($message)
 	{
@@ -84,6 +86,18 @@ class LoginView
 		';
 	}
 
+	private function generateLogoutButtonHTML(string $message)
+	{
+		return '
+			<form  method="post" >
+				<p id="' . self::$messageId . '">' . $message . '</p>
+				<input type="submit" name="' . self::$logout . '" value="logout"/>
+			</form>
+		';
+	}
+
+
+
 	private function doLoginAttempt(): void
 	{
 		$this->checkLoginForErrors();
@@ -104,6 +118,9 @@ class LoginView
 			$this->postPasswordIsMissing = true;
 		}
 	}
+
+
+
 
 	private function getLoginErrorMessage(): string
 	{
