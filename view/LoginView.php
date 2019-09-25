@@ -61,12 +61,19 @@ class LoginView
 		';
 	}
 
-	private function checkLoginRequestForErrors(): void {
+	private function checkLoginRequestForErrors(): void
+	{
 		$username = $this->getRequestUsername();
 		$password = $this->getRequestPassword();
 
-		if (isset($username)) {
-			$this->requestUsernameIsMissing = false;
+		var_dump($username);
+		var_dump($password);
+
+		if (!isset($username)) {
+			$this->requestUsernameIsMissing = true;
+		}
+		if (!isset($password)) {
+			$this->requestPasswordIsMissing = true;
 		}
 	}
 
@@ -81,11 +88,6 @@ class LoginView
 		return $message;
 	}
 
-	public function setrequestUsernameIsMissing()
-	{
-		$this->requestUsernameIsMissing = true;
-	}
-
 	private function getRequestUsername()
 	{
 		return $_REQUEST[self::$username];
@@ -94,5 +96,15 @@ class LoginView
 	private function getRequestPassword()
 	{
 		return $_REQUEST[self::$password];
+	}
+
+	private function getGETUsername()
+	{
+		return $_GET[self::$username];
+	}
+
+	private function getGETPassword()
+	{
+		return $_GET[self::$password];
 	}
 }

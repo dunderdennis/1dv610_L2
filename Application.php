@@ -1,7 +1,7 @@
 <?php
 
 require_once('controller/UserController.php');
-require_once('model/UserName.php');
+require_once('model/User.php');
 require_once('model/UserStorage.php');
 require_once('view/LoginView.php');
 require_once('view/DateTimeView.php');
@@ -11,7 +11,7 @@ require_once('view/RegisterView.php');
 class Application
 {
     private $storage;
-    private $username;
+    private $user;
     private $controller;
 
     private $layoutView;
@@ -22,14 +22,14 @@ class Application
     public function __construct()
     {
         $this->storage = new \model\UserStorage();
-        $this->username = $this->storage->loadUser();
+        $this->user = $this->storage->loadUser();
 
-        $this->layoutView = new \view\LayoutView($this->username);
+        $this->layoutView = new \view\LayoutView($this->user);
         $this->dateTimeView = new \view\DateTimeView();
         $this->loginView = new \view\LoginView();
         $this->registerView = new \view\RegisterView();
 
-        $this->controller = new  \controller\UserController($this->username, $this->layoutView);
+        $this->controller = new  \controller\UserController($this->user, $this->layoutView);
     }
 
     public function run() {
