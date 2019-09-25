@@ -33,7 +33,7 @@ class LayoutView
     if ($this->userWantsToRegister()) {
       $viewToDisplay = $registerView->response();
     } else {
-      $viewToDisplay = $loginView->response();
+      $viewToDisplay = $loginView->response($isLoggedIn);
     }
 
     echo '<!DOCTYPE html>

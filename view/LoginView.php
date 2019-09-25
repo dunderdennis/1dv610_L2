@@ -26,7 +26,7 @@ class LoginView
 
 
 
-	public function response()
+	public function response(bool $userIsLoggedIn)
 	{
 		/* var_dump(isset($_POST));
 		var_dump(isset($_POST[self::$login]));
@@ -42,7 +42,7 @@ class LoginView
 		$message = '';
 
 
-		if ($this->userIsLoggedIn) { 
+		if ($userIsLoggedIn) {
 			$response .= $this->generateLogoutButtonHTML($message);
 		} else {
 			if (isset($_POST[self::$username])) {
@@ -55,7 +55,6 @@ class LoginView
 			}
 
 			$response .= $this->generateLoginFormHTML($message);
-			
 		}
 		return $response;
 	}
@@ -119,9 +118,6 @@ class LoginView
 		}
 	}
 
-
-
-
 	private function getLoginErrorMessage(): string
 	{
 		$message = '';
@@ -134,6 +130,8 @@ class LoginView
 
 		return $message;
 	}
+
+
 
 	private function getPostUsername()
 	{

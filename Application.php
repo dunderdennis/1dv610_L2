@@ -27,7 +27,7 @@ class Application
         $this->layoutView = new \view\LayoutView($this->user);
         $this->dateTimeView = new \view\DateTimeView();
         $this->loginView = new \view\LoginView();
-        $this->registerView = new \view\RegisterView();
+        $this->registerView = new \view\RegisterView($this->storage);
 
         $this->controller = new  \controller\UserController($this->user, $this->layoutView);
     }

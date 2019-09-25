@@ -9,9 +9,9 @@ require_once("Application.php");
 $app = new Application();
 $app->run();
 
-echo 'POST: ';
+/* echo 'POST: ';
 var_dump($_POST);
 echo 'REQUEST: ';
 var_dump($_REQUEST);
 echo 'GET: ';
-var_dump($_GET);
+var_dump($_GET); */

@@ -14,7 +14,7 @@ class User
         $this->password = $newPassword;
 
         if (strlen($this->username) < self::$minNameLength) {
-            throw new \Exception('Username needs to be at least 2 characters.');
+            echo "throw new \Exception('Username needs to be at least 2 characters.')";
         }
     }
 
