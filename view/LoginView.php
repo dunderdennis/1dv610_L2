@@ -15,6 +15,7 @@ class LoginView
 
 	private $postUsernameIsMissing = false;
 	private $postPasswordIsMissing = false;
+	private $usernameFieldValue = '';
 
 	public function userWantsToLogin(): bool
 	{
@@ -34,6 +35,10 @@ class LoginView
 		var_dump(isset($_GET)); */
 
 		$message = '';
+
+		if (isset($_POST[self::$username])) {
+			$this->usernameFieldValue = $_POST[self::$username];
+		}
 
 		if ($this->userWantsToLogin()) {
 			$this->doLoginAttempt();
@@ -65,7 +70,7 @@ class LoginView
 					<p id="' . self::$messageId . '">' . $message . '</p>
 					
 					<label for="' . self::$username . '">Username :</label>
-					<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $_POST['username'] . '" />
+					<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $this->usernameFieldValue . '" />
 
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
@@ -92,9 +97,9 @@ class LoginView
 		if ($username == '') {
 			$this->postUsernameIsMissing = true;
 		} else {
-			$_POST['username'] = $username;
+			$_POST[self::$username] = $username;
 		}
-		
+
 		if ($password == '') {
 			$this->postPasswordIsMissing = true;
 		}
