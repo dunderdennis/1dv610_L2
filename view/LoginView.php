@@ -17,6 +17,11 @@ class LoginView
 	private $postPasswordIsMissing = false;
 	private $usernameFieldValue = '';
 
+	public function __construct(\model\UserStorage $userStorage)
+	{
+		$this->userStorage = $userStorage;
+	}
+
 
 
 	private function userPressesLoginButton(): bool
@@ -28,16 +33,6 @@ class LoginView
 
 	public function response(bool $userIsLoggedIn)
 	{
-		/* var_dump(isset($_POST));
-		var_dump(isset($_POST[self::$login]));
-
-		echo 'POST: ';
-		var_dump(isset($_POST));
-		echo 'REQUEST: ';
-		var_dump(isset($_REQUEST));
-		echo 'GET: ';
-		var_dump(isset($_GET)); */
-
 		$response = '';
 		$message = '';
 

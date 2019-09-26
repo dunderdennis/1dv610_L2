@@ -2,6 +2,8 @@
 
 namespace model;
 
+use stdClass;
+
 session_start();
 
 class UserStorage
@@ -43,6 +45,7 @@ class UserStorage
     public function saveUserToJSONDatabase(User $userToBeSaved)
     {
         array_push($this->userDatabase, $userToBeSaved);
+        var_dump($userToBeSaved);
         $this->userDatabase = json_encode($this->userDatabase);
         file_put_contents($this->url, $this->userDatabase, FILE_USE_INCLUDE_PATH);
     }
@@ -53,8 +56,8 @@ class UserStorage
         $password = $userToSearchFor->getPassword();
 
         foreach ($this->userDatabase as $key => $value) {
-            if ($username == $value->username) {
-                if ($password == $value->password) {
+            if ($username == $value->getUsername()) {
+                if ($password == $value->getUsername()) {
                     return $userToSearchFor;
                 } else {
                     $this->userErrorMessage = 'Wrong name or password';

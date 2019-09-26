@@ -60,10 +60,21 @@ class RegisterView
 		$message = '';
 
 		if ($this->postUsernameIsMissing) {
-			$message .= 'Username is missing';
+			$message .= 'Username is missing<br>';
 		}
+		if ($this->postUsernameIsTooShort) {
+			$message .= 'Username is too short<br>';
+		}
+
+
 		if ($this->postPasswordIsMissing) {
-			$message .= 'Password is missing';
+			$message .= 'Password is missing<br>';
+		}
+		if ($this->postPasswordIsTooShort) {
+			$message .= 'Password is too short<br>';
+		}
+		if ($this->passwordsDoNotMatch) {
+			$message .= 'Passwords do not match.';
 		}
 
 		return $message;
@@ -77,34 +88,33 @@ class RegisterView
 
 		$newUserOk = true;
 
-		while ($newUserOk) {
-			if ($username == '') {
-				$this->postUsernameIsMissing = true;
-				$newUserOk = false;
-			} else {
-				$_POST[self::$username] = $username;
-			}
-			if (strlen($username) < self::$minimumUsernameLength) {
-				$this->postUsernameIsTooShort = true;
-				$newUserOk = false;
-			}
-			if ($password == '') {
-				$this->postPasswordIsMissing = true;
-				$newUserOk = false;
-			}
-			if (strlen($password) < self::$minimumPasswordLength) {
-				$this->postPasswordIsTooShort = true;
-				$newUserOk = false;
-			}
-			if ($password != $repeatedPassword) {
-				$this->passwordsDoNotMatch = true;
-				$newUserOk = false;
-			}
+		if ($username == '') {
+			$this->postUsernameIsMissing = true;
+			$newUserOk = false;
+		} else if (strlen($username) < self::$minimumUsernameLength) {
+			$this->postUsernameIsTooShort = true;
+			$newUserOk = false;
+		} else {
+			$_POST[self::$username] = $username;
+		}
 
+		if ($password == '') {
+			$this->postPasswordIsMissing = true;
+			$newUserOk = false;
+		} else if (strlen($password) < self::$minimumPasswordLength) {
+			$this->postPasswordIsTooShort = true;
+			$newUserOk = false;
+		} else if ($password != $repeatedPassword) {
+			$this->passwordsDoNotMatch = true;
+			$newUserOk = false;
+		} else {
+			$_POST[self::$username] = $username;
+		}
+		if ($newUserOk) {
+			echo 'CODE EXECUTES HERE';
 			$newUser = new \model\User($_POST[self::$username], $_POST[self::$password]);
 			$this->userStorage->saveSessionUser($newUser);
 			$this->userStorage->saveUserToJSONDatabase($newUser);
-			return;
 		}
 	}
 

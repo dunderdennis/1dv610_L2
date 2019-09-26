@@ -2,15 +2,20 @@
 
 namespace view;
 
+use model\UserStorage;
+
 class LayoutView
 {
-  private $username;
   private $userWantsToLogin;
 
   public function __construct($user)
   {
     $this->user = $user;
-    $this->userWantsToLogin = false;
+  }
+
+  private function userWantsToLogin(): bool
+  {
+    return isset($_REQUEST['login']);
   }
 
   private function userWantsToRegister(): bool
@@ -34,6 +39,9 @@ class LayoutView
       $viewToDisplay = $registerView->response();
     } else {
       $viewToDisplay = $loginView->response($isLoggedIn);
+      if ($this->userWantsToLogin) {
+        
+      }
     }
 
     echo '<!DOCTYPE html>
