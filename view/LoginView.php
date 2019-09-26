@@ -47,7 +47,8 @@ class LoginView
 				$this->userStorage->clearSessionUser();
 
 				$_SESSION['showBye'] = true;
-				header("Refresh:0");
+				header('location: https://df222fx-1dv610-l2.herokuapp.com/');
+				// header("Refresh:0");
 				exit();
 			}
 
@@ -94,7 +95,7 @@ class LoginView
 			if (isset($userToLogin)) {
 				$this->userStorage->saveSessionUser($userToLogin);
 				$_SESSION['showWelcome'] = true;
-				header("Refresh:0");
+				header('location: https://df222fx-1dv610-l2.herokuapp.com/');
 				exit();
 			} else {
 				$this->wrongUsernameOrPassword = true;
