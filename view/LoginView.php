@@ -50,7 +50,7 @@ class LoginView
 				echo "<meta http-equiv='refresh' content='0'>";
 			}
 
-			if ($_SESSION['showWelcome']) {
+			if (isset($_SESSION['showWelcome'])) {
 				$message = 'Welcome';
 				$_SESSION['showWelcome'] = false;
 			}
@@ -67,7 +67,7 @@ class LoginView
 				$message = $this->getLoginMessage();
 			}
 
-			if ($_SESSION['showBye']) {
+			if (isset($_SESSION['showBye'])) {
 				$message = 'Bye bye!';
 				$_SESSION['showBye'] = false;
 			}
