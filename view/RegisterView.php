@@ -57,21 +57,21 @@ class RegisterView
 		$message = '';
 
 		if ($this->postUsernameIsMissing) {
-			$message .= 'Username is missing<br>';
+			$message .= 'Username is missing';
 		}
 		if ($this->postUsernameIsTooShort) {
-			$message .= 'Username has too few characters, at least 3 characters.<br>';
+			$message .= 'Username has too few characters, at least 3 characters.';
 		}
 
 
 		if ($this->postPasswordIsMissing) {
-			$message .= 'Password is missing<br>';
+			$message .= '<br>Password is missing';
 		}
 		if ($this->postPasswordIsTooShort) {
-			$message .= 'Password is too short<br>';
+			$message .= '<br>Password is too short';
 		}
 		if ($this->passwordsDoNotMatch) {
-			$message .= 'Passwords do not match.';
+			$message .= '<br>Passwords do not match.';
 		}
 
 		return $message;
