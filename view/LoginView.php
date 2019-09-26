@@ -48,7 +48,6 @@ class LoginView
 
 				$_SESSION['showBye'] = true;
 				header('location: https://df222fx-1dv610-l2.herokuapp.com/');
-				// header("Refresh:0");
 				exit();
 			}
 
