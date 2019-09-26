@@ -108,7 +108,6 @@ class RegisterView
 			$_POST[self::$username] = $username;
 		}
 		if ($newUserOk) {
-			echo 'CODE EXECUTES HERE';
 			$newUser = new \model\User($_POST[self::$username], $_POST[self::$password]);
 			$this->userStorage->saveSessionUser($newUser);
 			$this->userStorage->saveUserToJSONDatabase($newUser);

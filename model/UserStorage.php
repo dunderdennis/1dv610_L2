@@ -30,6 +30,7 @@ class UserStorage
     public function loadSessionUser()
     {
         if (isset($_SESSION[self::$SESSION_KEY])) {
+            echo 'LOADING SESSION USER';
             return $_SESSION[self::$SESSION_KEY];
         } else {
             return null;

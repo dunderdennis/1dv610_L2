@@ -43,12 +43,12 @@ class LoginView
 		$message = '';
 
 		if ($userIsLoggedIn) {
-			$response .= $this->generateLogoutButtonHTML($message);
-
 			if ($this->userPressesLogoutButton()) {
 				$this->userStorage->clearSessionUser();
+
 				$message = 'Bye bye!';
 			}
+			$response .= $this->generateLogoutButtonHTML($message);
 		} else {
 			if (isset($_POST[self::$username])) {
 				$this->usernameFieldValue = $_POST[self::$username];
@@ -56,6 +56,7 @@ class LoginView
 
 			if ($this->userPressesLoginButton()) {
 				$this->doLoginAttempt();
+
 				$message = $this->getLoginErrorMessage();
 			}
 
@@ -108,6 +109,8 @@ class LoginView
 			$message = 'Password is missing';
 		} else if ($this->wrongUsernameOrPassword) {
 			$message = $this->userStorage->getUserErrorMessage();
+		} else {
+			$message = 'Welcome';
 		}
 
 		return $message;
@@ -131,7 +134,7 @@ class LoginView
 	private function generateLoginFormHTML($message)
 	{
 		return '
-		<form method="post" > 
+		<form action="" method="post" > 
 			<fieldset>
 				<legend>Login - enter Username and password</legend>
 				<p id="' . self::$messageId . '">' . $message . '</p>
@@ -154,7 +157,7 @@ class LoginView
 	private function generateLogoutButtonHTML(string $message)
 	{
 		return '
-		<form  method="post" >
+		<form action="" method="post" >
 			<p id="' . self::$messageId . '">' . $message . '</p>
 			<input type="submit" name="' . self::$logout . '" value="logout"/>
 		</form>
