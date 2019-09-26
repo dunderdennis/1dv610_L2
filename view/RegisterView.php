@@ -60,7 +60,7 @@ class RegisterView
 			$message .= 'Username is missing<br>';
 		}
 		if ($this->postUsernameIsTooShort) {
-			$message .= 'Username is too short<br>';
+			$message .= 'Username has too few characters, at least 3 characters.<br>';
 		}
 
 
