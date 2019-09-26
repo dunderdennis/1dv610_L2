@@ -111,10 +111,15 @@ class RegisterView
 			$newUser = new \model\User($_POST[self::$username], $_POST[self::$password]);
 			$this->userStorage->saveSessionUser($newUser);
 			$this->userStorage->saveUserToJSONDatabase($newUser);
+
+			$homepage = '?';
+			$this->pageRedirect($homepage);
 		}
 	}
 
-
+	private function pageRedirect($location) {
+		echo '<META HTTP-EQUIV="Refresh" Content="0; URL='.$location.'">';
+	}
 
 	private function generateRegisterFormHTML($message)
 	{

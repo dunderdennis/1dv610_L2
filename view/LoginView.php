@@ -45,6 +45,7 @@ class LoginView
 		if ($userIsLoggedIn) {
 			if ($this->userPressesLogoutButton()) {
 				$this->userStorage->clearSessionUser();
+				$this->userIsLoggedIn = false;
 
 				$message = 'Bye bye!';
 			}
@@ -75,6 +76,7 @@ class LoginView
 			$userToLogin = $this->userStorage->findMatchingUser($userToLogin);
 			if (isset($userToLogin)) {
 				$this->userStorage->saveSessionUser($userToLogin);
+				$this->userIsLoggedIn = true;
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
