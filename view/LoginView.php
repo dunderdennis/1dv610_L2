@@ -15,6 +15,7 @@ class LoginView
 
 	private $postUsernameIsMissing = false;
 	private $postPasswordIsMissing = false;
+	private $wrongUsernameOrPassword = false;
 	private $usernameFieldValue = '';
 
 	public function __construct(\model\UserStorage $userStorage)
@@ -29,6 +30,11 @@ class LoginView
 		return isset($_POST[self::$login]);
 	}
 
+	private function userPressesLogoutButton(): bool
+	{
+		return isset($_POST[self::$logout]);
+	}
+
 
 
 	public function response(bool $userIsLoggedIn)
@@ -36,9 +42,13 @@ class LoginView
 		$response = '';
 		$message = '';
 
-
 		if ($userIsLoggedIn) {
 			$response .= $this->generateLogoutButtonHTML($message);
+
+			if ($this->userPressesLogoutButton()) {
+				$this->userStorage->clearSessionUser();
+				$message = 'Bye bye!';
+			}
 		} else {
 			if (isset($_POST[self::$username])) {
 				$this->usernameFieldValue = $_POST[self::$username];
@@ -56,60 +66,35 @@ class LoginView
 
 
 
-
-	private function generateLoginFormHTML($message)
+	private function doLoginAttempt()
 	{
-		return '
-			<form method="post" > 
-				<fieldset>
-					<legend>Login - enter Username and password</legend>
-					<p id="' . self::$messageId . '">' . $message . '</p>
-					
-					<label for="' . self::$username . '">Username :</label>
-					<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $this->usernameFieldValue . '" />
+		$userToLogin = $this->checkLoginForErrors();
 
-					<label for="' . self::$password . '">Password :</label>
-					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
-
-					<label for="' . self::$keep . '">Keep me logged in  :</label>
-					<input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
-					
-					<input type="submit" name="' . self::$login . '" value="login" />
-				</fieldset>
-			</form>
-		';
+		if (isset($userToLogin)) {
+			$userToLogin = $this->userStorage->findMatchingUser($userToLogin);
+			if (isset($userToLogin)) {
+				$this->userStorage->saveSessionUser($userToLogin);
+			} else {
+				$this->wrongUsernameOrPassword = true;
+			}
+		}
 	}
 
-	private function generateLogoutButtonHTML(string $message)
-	{
-		return '
-			<form  method="post" >
-				<p id="' . self::$messageId . '">' . $message . '</p>
-				<input type="submit" name="' . self::$logout . '" value="logout"/>
-			</form>
-		';
-	}
-
-
-
-	private function doLoginAttempt(): void
-	{
-		$this->checkLoginForErrors();
-	}
-
-	private function checkLoginForErrors(): void
+	private function checkLoginForErrors()
 	{
 		$username = $this->getPostUsername();
 		$password = $this->getPostPassword();
 
-		if ($username == '') {
+		if ($username == '' && $password == '') {
 			$this->postUsernameIsMissing = true;
-		} else {
-			$_POST[self::$username] = $username;
-		}
-
-		if ($password == '') {
 			$this->postPasswordIsMissing = true;
+		} else if ($username == '') {
+			$this->postUsernameIsMissing = true;
+		} else if ($password == '') {
+			$this->postPasswordIsMissing = true;
+			$_POST[self::$username] = $username;
+		} else {
+			return new \model\User($username, $password);
 		}
 	}
 
@@ -121,6 +106,8 @@ class LoginView
 			$message = 'Username is missing';
 		} else if ($this->postPasswordIsMissing) {
 			$message = 'Password is missing';
+		} else if ($this->wrongUsernameOrPassword) {
+			$message = $this->userStorage->getUserErrorMessage();
 		}
 
 		return $message;
@@ -136,5 +123,41 @@ class LoginView
 	private function getPostPassword()
 	{
 		return $_POST[self::$password];
+	}
+
+
+
+
+	private function generateLoginFormHTML($message)
+	{
+		return '
+		<form method="post" > 
+			<fieldset>
+				<legend>Login - enter Username and password</legend>
+				<p id="' . self::$messageId . '">' . $message . '</p>
+				
+				<label for="' . self::$username . '">Username :</label>
+				<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $this->usernameFieldValue . '" />
+
+				<label for="' . self::$password . '">Password :</label>
+				<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
+
+				<label for="' . self::$keep . '">Keep me logged in  :</label>
+				<input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
+				
+				<input type="submit" name="' . self::$login . '" value="login" />
+			</fieldset>
+		</form>
+	';
+	}
+
+	private function generateLogoutButtonHTML(string $message)
+	{
+		return '
+		<form  method="post" >
+			<p id="' . self::$messageId . '">' . $message . '</p>
+			<input type="submit" name="' . self::$logout . '" value="logout"/>
+		</form>
+	';
 	}
 }

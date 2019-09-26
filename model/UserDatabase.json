@@ -1,1 +1,14 @@
-[{"username":"default","password":"password"},{"username":"apa567","password":"asdasdasd"}]
+[
+    {
+        "username": "default",
+        "password": "password"
+    },
+    {
+        "username": "apa567",
+        "password": "asdasdasd"
+    },
+    {
+        "username": "dennis",
+        "password": "asdasd"
+    }
+]

@@ -36,6 +36,11 @@ class UserStorage
         }
     }
 
+    public function clearSessionUser()
+    {
+        $_SESSION[self::$SESSION_KEY] = null;
+    }
+
     public function saveSessionUser(User $userToBeSaved)
     {
         $_SESSION[self::$SESSION_KEY] = $userToBeSaved;
@@ -56,8 +61,12 @@ class UserStorage
         $password = $userToSearchFor->getPassword();
 
         foreach ($this->userDatabase as $key => $value) {
-            if ($username == $value->getUsername()) {
-                if ($password == $value->getUsername()) {
+            // echo 'KEY & VALUE';
+            // var_dump($key);
+            // var_dump($value);
+
+            if ($username == $value->username) {
+                if ($password == $value->password) {
                     return $userToSearchFor;
                 } else {
                     $this->userErrorMessage = 'Wrong name or password';
@@ -66,6 +75,7 @@ class UserStorage
                 $this->userErrorMessage = 'Wrong name or password';
             }
         }
+        return null;
     }
 
     public function getUserErrorMessage(): string
