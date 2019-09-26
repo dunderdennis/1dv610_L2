@@ -89,7 +89,8 @@ class LayoutView
   private function renderIsLoggedIn(bool $isLoggedIn): string
   {
     if ($isLoggedIn) {
-      return '<h2>Logged in as ' . $this->user->getUsername() . '</h2>';
+      // return '<h2>Logged in as ' . $this->user->getUsername() . '</h2>';
+      return '<h2>Logged in</h2>';
     } else {
       return '<h2>Not logged in</h2>';
     }
