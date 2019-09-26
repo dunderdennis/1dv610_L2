@@ -5,8 +5,8 @@ namespace model;
 class User
 {
     private static $minNameLength = 2;
-    private $username = null;
-    private $password = null;
+    public $username = null;
+    public $password = null;
 
     public function __construct(string $newName, string $newPassword)
     {

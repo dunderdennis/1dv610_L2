@@ -19,7 +19,7 @@ class LoginView
 
 
 
-	public function userPressesLoginButton(): bool
+	private function userPressesLoginButton(): bool
 	{
 		return isset($_POST[self::$login]);
 	}

@@ -28,7 +28,7 @@ class RegisterView
 		$this->userStorage = $userStorage;
 	}
 
-	public function userPressesRegisterButton(): bool
+	private function userPressesRegisterButton(): bool
 	{
 		return isset($_POST[self::$register]);
 	}
@@ -55,7 +55,7 @@ class RegisterView
 		return $response;
 	}
 
-	public function getRegisteringErrors(): string
+	private function getRegisteringErrors(): string
 	{
 		$message = '';
 
@@ -65,17 +65,11 @@ class RegisterView
 		if ($this->postPasswordIsMissing) {
 			$message .= 'Password is missing';
 		}
-		if ($this->postPassword) {
-			$message .= 'Password is missing';
-		}
-		if ($this->postPasswordIsMissing) {
-			$message .= 'Password is missing';
-		}
 
 		return $message;
 	}
 
-	public function TryRegisteringNewUser()
+	private function TryRegisteringNewUser()
 	{
 		$username = $this->getPostUsername();
 		$password = $this->getPostPassword();
@@ -90,7 +84,7 @@ class RegisterView
 			} else {
 				$_POST[self::$username] = $username;
 			}
-			if (strlen($username) < $this->minimumUsernameLength) {
+			if (strlen($username) < self::$minimumUsernameLength) {
 				$this->postUsernameIsTooShort = true;
 				$newUserOk = false;
 			}
@@ -98,7 +92,7 @@ class RegisterView
 				$this->postPasswordIsMissing = true;
 				$newUserOk = false;
 			}
-			if (strlen($password) < $this->minimumPasswordLength) {
+			if (strlen($password) < self::$minimumPasswordLength) {
 				$this->postPasswordIsTooShort = true;
 				$newUserOk = false;
 			}
@@ -108,7 +102,8 @@ class RegisterView
 			}
 
 			$newUser = new \model\User($_POST[self::$username], $_POST[self::$password]);
-			$this->userStorage->saveUser($newUser);
+			$this->userStorage->saveSessionUser($newUser);
+			$this->userStorage->saveUserToJSONDatabase($newUser);
 			return;
 		}
 	}
