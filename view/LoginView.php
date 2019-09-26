@@ -48,6 +48,7 @@ class LoginView
 
 				$_SESSION['showBye'] = true;
 				echo "<meta http-equiv='refresh' content='0'>";
+				exit();
 			}
 
 			if (isset($_SESSION['showWelcome'])) {
@@ -90,6 +91,7 @@ class LoginView
 				$this->userStorage->saveSessionUser($userToLogin);
 				$_SESSION['showWelcome'] = true;
 				echo "<meta http-equiv='refresh' content='0'>";
+				exit();
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
