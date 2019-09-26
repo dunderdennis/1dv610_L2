@@ -52,8 +52,10 @@ class LoginView
 			}
 
 			if (isset($_SESSION['showWelcome'])) {
-				$message = 'Welcome';
-				$_SESSION['showWelcome'] = false;
+				if ($_SESSION['showWelcome']) {
+					$message = 'Welcome';
+					$_SESSION['showWelcome'] = false;
+				}
 			}
 
 			$response = $this->generateLogoutButtonHTML($message);
@@ -69,8 +71,10 @@ class LoginView
 			}
 
 			if (isset($_SESSION['showBye'])) {
-				$message = 'Bye bye!';
-				$_SESSION['showBye'] = false;
+				if ($_SESSION['showBye']) {
+					$message = 'Bye bye!';
+					$_SESSION['showBye'] = false;
+				}
 			}
 
 			$response = $this->generateLoginFormHTML($message);
