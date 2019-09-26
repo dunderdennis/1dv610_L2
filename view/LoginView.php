@@ -74,6 +74,7 @@ class LoginView
 
 		if (isset($userToLogin)) {
 			$userToLogin = $this->userStorage->findMatchingUser($userToLogin);
+
 			if (isset($userToLogin)) {
 				$this->userStorage->saveSessionUser($userToLogin);
 				$this->userIsLoggedIn = true;
