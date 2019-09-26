@@ -45,11 +45,17 @@ class LoginView
 		if ($userIsLoggedIn) {
 			if ($this->userPressesLogoutButton()) {
 				$this->userStorage->clearSessionUser();
-				$this->userIsLoggedIn = false;
 
-				$message = 'Bye bye!';
+				$_SESSION['showBye'] = true;
+				echo "<meta http-equiv='refresh' content='0'>";
 			}
-			$response .= $this->generateLogoutButtonHTML($message);
+
+			if ($_SESSION['showWelcome']) {
+				$message = 'Welcome';
+				$_SESSION['showWelcome'] = false;
+			}
+
+			$response = $this->generateLogoutButtonHTML($message);
 		} else {
 			if (isset($_POST[self::$username])) {
 				$this->usernameFieldValue = $_POST[self::$username];
@@ -58,10 +64,15 @@ class LoginView
 			if ($this->userPressesLoginButton()) {
 				$this->doLoginAttempt();
 
-				$message = $this->getLoginErrorMessage();
+				$message = $this->getLoginMessage();
 			}
 
-			$response .= $this->generateLoginFormHTML($message);
+			if ($_SESSION['showBye']) {
+				$message = 'Bye bye!';
+				$_SESSION['showBye'] = false;
+			}
+
+			$response = $this->generateLoginFormHTML($message);
 		}
 		return $response;
 	}
@@ -77,7 +88,8 @@ class LoginView
 
 			if (isset($userToLogin)) {
 				$this->userStorage->saveSessionUser($userToLogin);
-				$this->userIsLoggedIn = true;
+				$_SESSION['showWelcome'] = true;
+				echo "<meta http-equiv='refresh' content='0'>";
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
@@ -102,7 +114,7 @@ class LoginView
 		}
 	}
 
-	private function getLoginErrorMessage(): string
+	private function getLoginMessage(): string
 	{
 		$message = '';
 
@@ -137,7 +149,7 @@ class LoginView
 	private function generateLoginFormHTML($message)
 	{
 		return '
-		<form action="" method="post" > 
+		<form method="post"> 
 			<fieldset>
 				<legend>Login - enter Username and password</legend>
 				<p id="' . self::$messageId . '">' . $message . '</p>
@@ -160,7 +172,7 @@ class LoginView
 	private function generateLogoutButtonHTML(string $message)
 	{
 		return '
-		<form action="" method="post" >
+		<form method="post">
 			<p id="' . self::$messageId . '">' . $message . '</p>
 			<input type="submit" name="' . self::$logout . '" value="logout"/>
 		</form>
