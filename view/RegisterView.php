@@ -68,7 +68,7 @@ class RegisterView
 			$message .= '<br>Password is missing';
 		}
 		if ($this->postPasswordIsTooShort) {
-			$message .= '<br>Password is too short';
+			$message .= '<br>Password has too few characters, at least 6 characters.';
 		}
 		if ($this->passwordsDoNotMatch) {
 			$message .= '<br>Passwords do not match.';
@@ -88,26 +88,27 @@ class RegisterView
 		if ($username == '') {
 			$this->postUsernameIsMissing = true;
 			$newUserOk = false;
-		} else if (strlen($username) < self::$minimumUsernameLength) {
+		}
+		if (strlen($username) < self::$minimumUsernameLength) {
 			$this->postUsernameIsTooShort = true;
 			$newUserOk = false;
-		} else {
-			$_POST[self::$username] = $username;
 		}
 
 		if ($password == '') {
 			$this->postPasswordIsMissing = true;
 			$newUserOk = false;
-		} else if (strlen($password) < self::$minimumPasswordLength) {
+		}
+		if (strlen($password) < self::$minimumPasswordLength) {
 			$this->postPasswordIsTooShort = true;
 			$newUserOk = false;
-		} else if ($password != $repeatedPassword) {
+		}
+		if ($password != $repeatedPassword) {
 			$this->passwordsDoNotMatch = true;
 			$newUserOk = false;
-		} else {
-			$_POST[self::$username] = $username;
 		}
+
 		if ($newUserOk) {
+			$_POST[self::$username] = $username;
 			$newUser = new \model\User($_POST[self::$username], $_POST[self::$password]);
 			$this->userStorage->saveSessionUser($newUser);
 			$this->userStorage->saveUserToJSONDatabase($newUser);
@@ -117,8 +118,9 @@ class RegisterView
 		}
 	}
 
-	private function pageRedirect($location) {
-		echo '<META HTTP-EQUIV="Refresh" Content="0; URL='.$location.'">';
+	private function pageRedirect($location)
+	{
+		echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
 	}
 
 	private function generateRegisterFormHTML($message)
