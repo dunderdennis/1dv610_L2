@@ -47,7 +47,7 @@ class LoginView
 				$this->userStorage->clearSessionUser();
 
 				$_SESSION['showBye'] = true;
-				header('location: ?');
+				// header('location: ?');
 			}
 
 			if (isset($_SESSION['showWelcome'])) {
@@ -101,10 +101,11 @@ class LoginView
 
 					setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
 
-					setcookie(self::$cookiePassword, $userToLogin->getPassword(), $thirtyDays);
+					$randString = substr(md5(rand()), 0, 40);
+					setcookie(self::$cookiePassword, $randString, $thirtyDays);
 				}
 
-				header('location: ?');
+				// header('location: ?');
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
