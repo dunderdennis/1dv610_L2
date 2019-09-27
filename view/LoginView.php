@@ -118,15 +118,14 @@ class LoginView
 
 					setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
 
-					// $randString = substr(md5(rand()), 0, 40);
-					$randString = $userToLogin->getPassword();
+					$randString = substr(md5(rand()), 0, 40);
+
 					setcookie(self::$cookiePassword, $randString, $thirtyDays);
 
 					$_SESSION['showWelcomeCookie'] = true;
 				}
 
 				header('location: ?');
-
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
