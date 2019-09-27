@@ -3,7 +3,7 @@
 //MAKE SURE ERRORS ARE SHOWN... MIGHT WANT TO TURN THIS OFF ON A PUBLIC SERVER
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
-echo 'index.php line 6: TODO: Test case 3.3-3.8 (cookie stuff), test case 4.8-4.10.';
+// echo 'index.php line 6: TODO: Test case 3.3-3.8 (cookie stuff), test case 4.8-4.10.';
 
 date_default_timezone_set('Europe/Stockholm');
 

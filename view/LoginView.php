@@ -47,8 +47,8 @@ class LoginView
 				$this->userStorage->clearSessionUser();
 
 				$_SESSION['showBye'] = true;
-				header('location: https://df222fx-1dv610-l2.herokuapp.com/');
-				exit();
+				header('location: ?');
+				// exit();
 			}
 
 			if (isset($_SESSION['showWelcome'])) {
@@ -65,7 +65,7 @@ class LoginView
 			}
 
 			if ($this->userPressesLoginButton()) {
-				$this->doLoginAttempt();
+				$this->doLoginAttempt(isset($_POST[self::$keep]));
 
 				$message = $this->getLoginMessage();
 			}
@@ -75,7 +75,7 @@ class LoginView
 					$message = 'Bye bye!';
 					$_SESSION['showBye'] = false;
 				}
-			}
+			} 
 
 			$response = $this->generateLoginFormHTML($message);
 		}
@@ -84,7 +84,7 @@ class LoginView
 
 
 
-	private function doLoginAttempt()
+	private function doLoginAttempt(bool $keepLoggedInChecked)
 	{
 		$userToLogin = $this->checkLoginForErrors();
 
@@ -94,8 +94,15 @@ class LoginView
 			if (isset($userToLogin)) {
 				$this->userStorage->saveSessionUser($userToLogin);
 				$_SESSION['showWelcome'] = true;
-				header('location: https://df222fx-1dv610-l2.herokuapp.com/');
-				exit();
+
+				if ($keepLoggedInChecked) {
+					echo 'SETTING COOKIES ';
+					setcookie(self::$cookieName);
+					setcookie($this->cookiePassword);
+				}
+
+				header('location: ?');
+				// exit();
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
