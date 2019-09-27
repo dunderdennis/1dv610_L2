@@ -27,9 +27,15 @@ class UserStorage
         return $phpObj;
     }
 
-    public function loadSessionUser()
+    public function loadUser()
     {
-        if (isset($_SESSION[self::$SESSION_KEY])) {
+        $cookieName = 'LoginView::CookieName';
+        $cookiePassword = 'LoginView::CookiePassword';
+
+        if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) { 
+            echo 'COOKIE USER RETURNED';
+            return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
+        } else if (isset($_SESSION[self::$SESSION_KEY])) {
             return $_SESSION[self::$SESSION_KEY];
         } else {
             return null;
@@ -41,6 +47,18 @@ class UserStorage
         $_SESSION[self::$SESSION_KEY] = null;
     }
 
+    public function clearCookieUser()
+    {
+        $cookieName = 'LoginView::CookieName';
+        $cookiePassword = 'LoginView::CookiePassword';
+
+        unset($_COOKIE[$cookieName]);
+        setcookie($cookieName, null, -1);
+
+        unset($_COOKIE[$cookiePassword]);
+        setcookie($cookiePassword, null, -1);
+    }
+
     public function saveSessionUser(User $userToBeSaved)
     {
         $_SESSION[self::$SESSION_KEY] = $userToBeSaved;
@@ -50,7 +68,7 @@ class UserStorage
     public function saveUserToJSONDatabase(User $userToBeSaved)
     {
         array_push($this->userDatabase, $userToBeSaved);
-        
+
         $this->userDatabase = json_encode($this->userDatabase);
         file_put_contents($this->url, $this->userDatabase, FILE_USE_INCLUDE_PATH);
     }
@@ -61,10 +79,6 @@ class UserStorage
         $password = $userToSearchFor->getPassword();
 
         foreach ($this->userDatabase as $key => $value) {
-            // echo 'KEY & VALUE';
-            // var_dump($key);
-            // var_dump($value);
-
             if ($username == $value->username) {
                 if ($password == $value->password) {
                     return $userToSearchFor;

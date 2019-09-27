@@ -17,6 +17,7 @@ class LoginView
 	private $postPasswordIsMissing = false;
 	private $wrongUsernameOrPassword = false;
 	private $usernameFieldValue = '';
+	private $userIsLoggedInWithCookie = false;
 
 	public function __construct(\model\UserStorage $userStorage)
 	{
@@ -42,9 +43,20 @@ class LoginView
 		$response = '';
 		$message = '';
 
+		if (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
+			$this->userIsLoggedInWithCookie = true;
+			$userIsLoggedIn = true;
+		}
+
+
 		if ($userIsLoggedIn) {
 			if ($this->userPressesLogoutButton()) {
 				$this->userStorage->clearSessionUser();
+
+				if (isset(self::$cookieName) && isset(self::$cookiePassword)) {
+					echo 'COOKIE WAS SET AND IS NOW CLEARED ';
+					$this->userStorage->clearCookieUser();
+				}
 
 				$_SESSION['showBye'] = true;
 				header('location: ?');
@@ -55,6 +67,10 @@ class LoginView
 					$message = 'Welcome';
 					$_SESSION['showWelcome'] = false;
 				}
+			}
+
+			if($this->userIsLoggedInWithCookie) {
+				$message = 'Welcome back with cookie';
 			}
 
 			$response = $this->generateLogoutButtonHTML($message);
@@ -101,10 +117,13 @@ class LoginView
 
 					setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
 
-					$randString = substr(md5(rand()), 0, 40);
+					// $randString = substr(md5(rand()), 0, 40);
+					$randString = $userToLogin->getPassword();
 					setcookie(self::$cookiePassword, $randString, $thirtyDays);
 				}
+
 				header('location: ?');
+
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}

@@ -22,7 +22,7 @@ class Application
     public function __construct()
     {
         $this->storage = new \model\UserStorage();
-        $this->user = $this->storage->loadSessionUser();
+        $this->user = $this->storage->loadUser();
 
         $this->layoutView = new \view\LayoutView($this->user);
         $this->dateTimeView = new \view\DateTimeView();
