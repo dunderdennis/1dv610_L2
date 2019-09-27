@@ -31,12 +31,10 @@ class UserStorage
     {
         $cookieName = 'LoginView::CookieName';
         $cookiePassword = 'LoginView::CookiePassword';
-
-        if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) { 
-            // echo 'COOKIE USER RETURNED';
-            return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
-        } else if (isset($_SESSION[self::$SESSION_KEY])) {
+        if (isset($_SESSION[self::$SESSION_KEY])) {
             return $_SESSION[self::$SESSION_KEY];
+        } else if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
+            return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
         } else {
             return null;
         }
