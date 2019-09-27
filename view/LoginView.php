@@ -104,7 +104,6 @@ class LoginView
 					$randString = substr(md5(rand()), 0, 40);
 					setcookie(self::$cookiePassword, $randString, $thirtyDays);
 				}
-
 				header('location: ?');
 			} else {
 				$this->wrongUsernameOrPassword = true;
