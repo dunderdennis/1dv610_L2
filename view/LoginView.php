@@ -17,7 +17,6 @@ class LoginView
 	private $postPasswordIsMissing = false;
 	private $wrongUsernameOrPassword = false;
 	private $usernameFieldValue = '';
-	private $userIsLoggedInWithCookie = false;
 
 	public function __construct(\model\UserStorage $userStorage)
 	{
@@ -44,7 +43,6 @@ class LoginView
 		$message = '';
 
 		if (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
-			$this->userIsLoggedInWithCookie = true;
 			$userIsLoggedIn = true;
 		}
 
@@ -69,8 +67,11 @@ class LoginView
 				}
 			}
 
-			if($this->userIsLoggedInWithCookie) {
-				$message = 'Welcome back with cookie';
+			if (isset($_SESSION['showWelcomeCookie'])) {
+				if ($_SESSION['showWelcomeCookie']) {
+					$message = 'Welcome back with cookie';
+					$_SESSION['showWelcomeCookie'] = false;
+				}
 			}
 
 			$response = $this->generateLogoutButtonHTML($message);
@@ -120,6 +121,8 @@ class LoginView
 					// $randString = substr(md5(rand()), 0, 40);
 					$randString = $userToLogin->getPassword();
 					setcookie(self::$cookiePassword, $randString, $thirtyDays);
+
+					$_SESSION['showWelcomeCookie'] = true;
 				}
 
 				header('location: ?');
