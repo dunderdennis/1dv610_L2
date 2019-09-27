@@ -47,7 +47,7 @@ class LoginView
 				$this->userStorage->clearSessionUser();
 
 				$_SESSION['showBye'] = true;
-				header('location: ?');
+				// header('location: ?');
 			}
 
 			if (isset($_SESSION['showWelcome'])) {
@@ -74,7 +74,7 @@ class LoginView
 					$message = 'Bye bye!';
 					$_SESSION['showBye'] = false;
 				}
-			} 
+			}
 
 			$response = $this->generateLoginFormHTML($message);
 		}
@@ -96,11 +96,15 @@ class LoginView
 
 				if ($keepLoggedInChecked) {
 					echo 'SETTING COOKIES ';
-					setcookie(self::$cookieName);
-					setcookie($this->cookiePassword);
+
+					$thirtyDays = time() + 60 * 60 * 24 * 30;
+
+					setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
+
+					setcookie(self::$cookiePassword, $userToLogin->getPassword(), $thirtyDays);
 				}
 
-				header('location: ?');
+				// header('location: ?');
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
