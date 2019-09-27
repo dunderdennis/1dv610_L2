@@ -54,7 +54,7 @@ class LoginView
 				$this->userStorage->clearSessionUser();
 
 				if (isset(self::$cookieName) && isset(self::$cookiePassword)) {
-					echo 'COOKIE WAS SET AND IS NOW CLEARED ';
+					// echo 'COOKIE WAS SET AND IS NOW CLEARED ';
 					$this->userStorage->clearCookieUser();
 				}
 
@@ -111,7 +111,7 @@ class LoginView
 				$_SESSION['showWelcome'] = true;
 
 				if ($keepLoggedInChecked) {
-					echo 'SETTING COOKIES ';
+					// echo 'SETTING COOKIES ';
 
 					$thirtyDays = time() + 60 * 60 * 24 * 30;
 
