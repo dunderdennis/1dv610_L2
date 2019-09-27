@@ -17,6 +17,7 @@ class RegisterView
 	private $postPasswordIsMissing = false;
 	private $postPasswordIsTooShort = false;
 	private $postUsernameIsTooShort = false;
+	private $usernameContainsInvalidCharacters = false;
 	private $passwordsDoNotMatch = false;
 	private $usernameFieldValue = '';
 
@@ -37,7 +38,7 @@ class RegisterView
 		$response = '';
 		$message = '';
 
-		if (isset($_POST[self::$username])) {
+		if (isset($_POST[self::$username])) {		
 			$this->usernameFieldValue = $_POST[self::$username];
 		}
 
@@ -62,6 +63,9 @@ class RegisterView
 		if ($this->postUsernameIsTooShort) {
 			$message .= 'Username has too few characters, at least 3 characters.';
 		}
+		if ($this->usernameContainsInvalidCharacters) {
+			$message .= 'Username contains invalid characters.';
+		}
 
 
 		if ($this->postPasswordIsMissing) {
@@ -80,6 +84,7 @@ class RegisterView
 	private function TryRegisteringNewUser()
 	{
 		$username = $this->getPostUsername();
+		$strippedUsername = strip_tags($username);
 		$password = $this->getPostPassword();
 		$repeatedPassword = $this->getPostRepeatPassword();
 
@@ -91,6 +96,10 @@ class RegisterView
 		}
 		if (strlen($username) < self::$minimumUsernameLength) {
 			$this->postUsernameIsTooShort = true;
+			$newUserOk = false;
+		}
+		if ($username != $strippedUsername) {
+			$this->usernameContainsInvalidCharacters = true;
 			$newUserOk = false;
 		}
 
@@ -108,8 +117,7 @@ class RegisterView
 		}
 
 		if ($newUserOk) {
-			$_POST[self::$username] = $username;
-			$newUser = new \model\User($_POST[self::$username], $_POST[self::$password]);
+			$newUser = new \model\User($username, $password);
 			$this->userStorage->saveSessionUser($newUser);
 			$this->userStorage->saveUserToJSONDatabase($newUser);
 
@@ -133,7 +141,7 @@ class RegisterView
 			<br>
 
 			<label for="' . self::$username . '">Username :</label>
-			<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $this->usernameFieldValue . '" />
+			<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . strip_tags($this->usernameFieldValue) . '" />
 			<br>
 
 			<label for="' . self::$password . '">Password :</label>
