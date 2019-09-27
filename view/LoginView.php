@@ -48,7 +48,6 @@ class LoginView
 
 				$_SESSION['showBye'] = true;
 				header('location: ?');
-				// exit();
 			}
 
 			if (isset($_SESSION['showWelcome'])) {
@@ -102,7 +101,6 @@ class LoginView
 				}
 
 				header('location: ?');
-				// exit();
 			} else {
 				$this->wrongUsernameOrPassword = true;
 			}
