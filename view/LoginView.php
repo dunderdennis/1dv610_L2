@@ -112,8 +112,6 @@ class LoginView
 				$_SESSION['showWelcome'] = true;
 
 				if ($keepLoggedInChecked) {
-					// echo 'SETTING COOKIES ';
-
 					$thirtyDays = time() + 60 * 60 * 24 * 30;
 
 					setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
