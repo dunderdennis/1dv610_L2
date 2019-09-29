@@ -34,6 +34,7 @@ class UserStorage
         if (isset($_SESSION[self::$SESSION_KEY])) {
             return $_SESSION[self::$SESSION_KEY];
         } else if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
+            $_SESSION['showWelcomeCookie'] = true;
             return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
         } else {
             return null;

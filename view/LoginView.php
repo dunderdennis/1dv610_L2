@@ -52,7 +52,6 @@ class LoginView
 				$this->userStorage->clearSessionUser();
 
 				if (isset(self::$cookieName) && isset(self::$cookiePassword)) {
-					// echo 'COOKIE WAS SET AND IS NOW CLEARED ';
 					$this->userStorage->clearCookieUser();
 				}
 
@@ -65,9 +64,7 @@ class LoginView
 					$message = 'Welcome';
 					$_SESSION['showWelcome'] = false;
 				}
-			}
-
-			if (isset($_SESSION['showWelcomeCookie'])) {
+			} else if (isset($_SESSION['showWelcomeCookie'])) {
 				if ($_SESSION['showWelcomeCookie']) {
 					$message = 'Welcome back with cookie';
 					$_SESSION['showWelcomeCookie'] = false;
@@ -119,8 +116,6 @@ class LoginView
 					$randString = substr(md5(rand()), 0, 40);
 
 					setcookie(self::$cookiePassword, $randString, $thirtyDays);
-
-					$_SESSION['showWelcomeCookie'] = true;
 				}
 
 				header('location: ?');
