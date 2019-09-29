@@ -54,7 +54,6 @@ class LoginView
 				if (isset(self::$cookieName) && isset(self::$cookiePassword)) {
 					$this->userStorage->clearCookieUser();
 				}
-
 				$_SESSION['showBye'] = true;
 				header('location: ?');
 			}
