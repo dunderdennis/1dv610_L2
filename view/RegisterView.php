@@ -21,10 +21,31 @@ class RegisterView
 	private $passwordsDoNotMatch = false;
 	private $usernameFieldValue = '';
 
+
+
 	public function __construct(\model\UserStorage $userStorage)
 	{
 		$this->userStorage = $userStorage;
 	}
+
+
+
+	private function getPostUsername()
+	{
+		return $_POST[self::$username];
+	}
+
+	private function getPostPassword()
+	{
+		return $_POST[self::$password];
+	}
+
+	private function getPostRepeatPassword()
+	{
+		return $_POST[self::$repeatPassword];
+	}
+
+
 
 	private function userPressesRegisterButton(): bool
 	{
@@ -38,7 +59,7 @@ class RegisterView
 		$response = '';
 		$message = '';
 
-		if (isset($_POST[self::$username])) {		
+		if (isset($_POST[self::$username])) {
 			$this->usernameFieldValue = $_POST[self::$username];
 		}
 
@@ -131,6 +152,8 @@ class RegisterView
 		echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
 	}
 
+
+
 	private function generateRegisterFormHTML($message)
 	{
 		return '
@@ -156,20 +179,5 @@ class RegisterView
 		</fieldset>
 	</form>
 	';
-	}
-
-	private function getPostUsername()
-	{
-		return $_POST[self::$username];
-	}
-
-	private function getPostPassword()
-	{
-		return $_POST[self::$password];
-	}
-
-	private function getPostRepeatPassword()
-	{
-		return $_POST[self::$repeatPassword];
 	}
 }

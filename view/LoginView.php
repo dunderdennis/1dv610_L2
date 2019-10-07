@@ -20,9 +20,44 @@ class LoginView
 	private $wrongUsernameOrPassword = false;
 	private $usernameFieldValue = '';
 
+
+
 	public function __construct(\model\UserStorage $userStorage)
 	{
 		$this->userStorage = $userStorage;
+	}
+
+
+
+	private function setUserCookies(\model\User $userToLogin): void
+	{
+		$thirtyDays = time() + 60 * 60 * 24 * 30;
+
+		setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
+
+		$randString = substr(md5(rand()), 0, 40);
+
+		setcookie(self::$cookiePassword, $randString, $thirtyDays);
+	}
+
+	private function setSessionMessage(string $identifier, string $message): string
+	{
+		if ($_SESSION[$identifier]) {
+			$_SESSION[$identifier] = false;
+			return $message;
+		}
+	}
+
+
+
+	private function getPostUsername()
+	{
+		return $_POST[self::$username];
+	}
+
+	private function getPostPassword()
+	{
+		return $_POST[self::$password];
 	}
 
 
@@ -47,11 +82,11 @@ class LoginView
 		return isset($_POST[self::$username]);
 	}
 
-
 	private function sessionMessageFlagIsSet(string $identifier): bool
 	{
 		return isset($_SESSION[$identifier]);
 	}
+
 
 
 	public function response(bool $userIsLoggedIn)
@@ -159,39 +194,6 @@ class LoginView
 
 		return $message;
 	}
-
-
-	private function setUserCookies(\model\User $userToLogin): void
-	{
-		$thirtyDays = time() + 60 * 60 * 24 * 30;
-
-		setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
-
-		$randString = substr(md5(rand()), 0, 40);
-
-		setcookie(self::$cookiePassword, $randString, $thirtyDays);
-	}
-
-	private function setSessionMessage(string $identifier, string $message): string
-	{
-		if ($_SESSION[$identifier]) {
-			$_SESSION[$identifier] = false;
-			return $message;
-		}
-	}
-
-
-
-	private function getPostUsername()
-	{
-		return $_POST[self::$username];
-	}
-
-	private function getPostPassword()
-	{
-		return $_POST[self::$password];
-	}
-
 
 
 

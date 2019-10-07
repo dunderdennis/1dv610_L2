@@ -8,6 +8,8 @@ class User
     public $username = null; // Maybe make these private. for now this works GREAT.
     public $password = null;
 
+
+
     public function __construct(string $newName, string $newPassword)
     {
         $this->username = $this->applyFilter($newName);
@@ -18,14 +20,11 @@ class User
         }
     }
 
+
+
     public function setUsername(string $newName): void
     {
         $this->username = $newName;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
     }
 
     public function setPassword(string $newPassword): void
@@ -33,10 +32,19 @@ class User
         $this->password = $newPassword;
     }
 
+
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
     public function getPassword(): string
     {
         return $this->password;
     }
+
+
 
     public static function applyFilter(string $rawInput): string
     {

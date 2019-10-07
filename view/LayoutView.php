@@ -2,36 +2,22 @@
 
 namespace view;
 
-use model\UserStorage;
-
 class LayoutView
 {
-  private $userWantsToLogin;
-
   public function __construct($user)
   {
     $this->user = $user;
   }
 
-  private function userWantsToLogin(): bool
-  {
-    return isset($_REQUEST['login']);
-  }
+
 
   private function userWantsToRegister(): bool
   {
     return isset($_REQUEST['register']);
   }
 
-  /**
-   * Render function for LayoutView class.
-   *
-   * @param boolean $isLoggedIn
-   * @param LoginView $loginView
-   * @param DateTimeView $dateTimeView
-   * @param RegisterView $registerView
-   * @return void
-   */
+
+
   public function response(bool $isLoggedIn, LoginView $loginView, DateTimeView $dateTimeView, RegisterView $registerView): void
   {
     $viewToDisplay = '';
@@ -39,9 +25,7 @@ class LayoutView
       $viewToDisplay = $registerView->response();
     } else {
       $viewToDisplay = $loginView->response($isLoggedIn);
-      if ($this->userWantsToLogin) {
-        
-      }
+      if ($this->userWantsToLogin) { }
     }
 
     echo '<!DOCTYPE html>
@@ -65,12 +49,6 @@ class LayoutView
     ';
   }
 
-  /**
-   * Handles rendering of Register-link.
-   *
-   * @param boolean $userWantsToRegister
-   * @return string
-   */
   private function renderRegisterLink(bool $userWantsToRegister)
   {
     if ($userWantsToRegister) {
@@ -80,12 +58,6 @@ class LayoutView
     }
   }
 
-  /**
-   * Handles rendering of Logged in-text.
-   *
-   * @param boolean $isLoggedIn
-   * @return string
-   */
   private function renderIsLoggedIn(bool $isLoggedIn): string
   {
     if ($isLoggedIn) {

@@ -19,6 +19,8 @@ class Application
     private $loginView;
     private $registerView;
 
+
+
     public function __construct()
     {
         $this->storage = new \model\UserStorage();
@@ -32,9 +34,11 @@ class Application
         $this->controller = new  \controller\UserController($this->user, $this->layoutView);
     }
 
+
+
     public function run()
     {
-        $this->render();
+        $this->renderPage();
     }
 
     private function isLoggedIn(): bool
@@ -42,7 +46,7 @@ class Application
         return isset($this->user);
     }
 
-    private function render()
+    private function renderPage()
     {
         $this->layoutView->response($this->isLoggedIn(), $this->loginView, $this->dateTimeView, $this->registerView);
     }
