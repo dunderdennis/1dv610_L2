@@ -1,8 +1,10 @@
 <?php
 
 require_once('controller/UserController.php');
+
 require_once('model/User.php');
 require_once('model/UserStorage.php');
+
 require_once('view/LoginView.php');
 require_once('view/DateTimeView.php');
 require_once('view/LayoutView.php');
