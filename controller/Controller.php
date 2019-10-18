@@ -49,36 +49,33 @@ class Controller
 
     private function doLoginAttempt(): void
     {
+        $username = $this->loginView->getPostPassword();
+        $password = $this->loginView->getPostUsername();
+        $keepLoggedInChecked = $this->loginView->userhasCheckedKeepMeLoggedIn();
+
+        $loginData = new \model\LoginData($username, $password, $keepLoggedInChecked);
+
         try {
-            $username = $this->loginView->getPostPassword();
-            $password = $this->loginView->getPostUsername();
-            $keepLoggedInChecked = $this->loginView->userhasCheckedKeepMeLoggedIn();
+            $this->userStorage->logInUser($loginData);
+        } catch (\Exception $e) {
+            $this->message = $e->getMessage();
+        }
 
-            $loginData = new \model\LoginData($username, $password, $keepLoggedInChecked);
-
-            $loginOK = $this->userStorage->checkUserDataIsOK($loginData);
-
-
-
+        if (isset($userToLogin)) {
+            $userToLogin = $this->userStorage->findMatchingUser($userToLogin);
 
             if (isset($userToLogin)) {
-                $userToLogin = $this->userStorage->findMatchingUser($userToLogin);
+                $this->userStorage->saveSessionUser($userToLogin);
+                $_SESSION['showWelcome'] = true;
 
-                if (isset($userToLogin)) {
-                    $this->userStorage->saveSessionUser($userToLogin);
-                    $_SESSION['showWelcome'] = true;
-
-                    if ($keepLoggedInChecked) {
-                        $this->setUserCookies($userToLogin);
-                    }
-
-                    header('location: ?');
-                } else {
-                    $this->wrongUsernameOrPassword = true;
+                if ($keepLoggedInChecked) {
+                    $this->setUserCookies($userToLogin);
                 }
+
+                header('location: ?');
+            } else {
+                $this->wrongUsernameOrPassword = true;
             }
-        } catch (\Exception $e) {
-            echo $e . $e->getMessage();
         }
     }
 

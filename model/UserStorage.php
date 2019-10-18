@@ -21,35 +21,25 @@ class UserStorage
         $this->userDatabase = $this->loadUserDatabaseFromJSON(self::$url);
     }
 
-
-    public function checkUserDataIsOK(\model\LoginData $loginData): bool
+    public function logInUser(\model\LoginData $loginData): void
     {
         $username = $loginData->username;
         $password = $loginData->password;
 
-        if ($username == '') {
-            throw new \exception\TooShortNameException();
-        } else if ($password == '') {
-            throw new \exception\TooShortNameException();
-        } else {
-            return true;
-        }
+        $userToLogin = new User($username, $password);
     }
 
-
-
-
-    public function clearSessionUser():void
+    public function clearSessionUser(): void
     {
         $this->session[self::$SESSION_KEY] = null;
     }
 
-    public function saveSessionUser(\model\User $userToBeSaved):void
+    public function saveSessionUser(\model\User $userToBeSaved): void
     {
         $this->session[self::$SESSION_KEY] = $userToBeSaved;
     }
 
-    public function saveUserToJSONDatabase(User $userToBeSaved)
+    public function saveUserToJSONDatabase(User $userToBeSaved): void
     {
         array_push($this->userDatabase, $userToBeSaved);
 

@@ -36,84 +36,28 @@ class LoginView
 	}
 
 
-	public function getHTML()
+	public function getHTML($message)
 	{
-		$ret = '';
-		$message = '';
+		$ret = $this->getLogoutButtonHTML($message);
 
-		$userIsLoggedIn = false;
+		$ret .= $this->getLoginFormHTML($message);
 
-		if ($this->userCookieIsSet()) {
-			$this->getCookieUserCredentials();
-			$userIsLoggedIn = true;
-		}
-
-		if ($userIsLoggedIn) {
-			if ($this->userPressesLogoutButton()) {
-
-				$this->userStorage->clearSessionUser();
-				$this->userStorage->clearCookieUser();
-
-				$_SESSION['showBye'] = true;
-				header('location: ?');
-			}
-
-			if ($this->cookieMessageFlagIsSet('showWelcome')) {
-				$message = $this->setSessionMessage('showWelcome', 'Welcome');
-			} else if ($this->cookieMessageFlagIsSet('showWelcomeCookie')) {
-				$message = $this->setSessionMessage('showWelcomeCookie', 'Welcome back with cookie');
-			}
-
-			$ret = $this->generateLogoutButtonHTML($message);
-		} else {
-
-			if ($this->postHasUsername()) {
-				$this->usernameFieldValue = $_POST[self::$username];
-			}
-
-			if ($this->userPressesLoginButton()) {
-				$message = $this->getLoginMessage();
-			}
-
-			if ($this->cookieMessageFlagIsSet('showBye')) {
-				$message = $this->setSessionMessage('showBye', 'Bye bye!');
-			}
-
-			$ret = $this->generateLoginFormHTML($message);
-		}
 		return $ret;
 	}
 
-	// public function loadUserFromCookies(string $cookieName, string $cookiePassword): \model\User
-    // {
 
 
-    //     $userKey = self::$userKey;
+	public function clearCookieUser()
+	{
+		$cookieName = 'LoginView::CookieName';
+		$cookiePassword = 'LoginView::CookiePassword';
 
-    //     // If the user exists in the session object, return it.
-    //     if (isset($this->session->$userKey)) {
-    //         return $this->session->$userKey;
-    //     }
+		unset($_COOKIE[$cookieName]);
+		setcookie($cookieName, null, -1);
 
-    //     if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
-    //         $_SESSION['showWelcomeCookie'] = true;
-    //         return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
-    //     } else {
-    //         return new User('', '');
-    //     }
-    // }
-    
-    public function clearCookieUser()
-    {
-        $cookieName = 'LoginView::CookieName';
-        $cookiePassword = 'LoginView::CookiePassword';
-
-        unset($_COOKIE[$cookieName]);
-        setcookie($cookieName, null, -1);
-
-        unset($_COOKIE[$cookiePassword]);
-        setcookie($cookiePassword, null, -1);
-    }
+		unset($_COOKIE[$cookiePassword]);
+		setcookie($cookiePassword, null, -1);
+	}
 
 	public function getCookieUserCredentials(): \model\User
 	{
@@ -138,12 +82,12 @@ class LoginView
 		return isset($this->post[self::$keepLoggedIn]);
 	}
 
-	public function getPostUsername()
+	public function getPostUsername(): string
 	{
 		return $this->post[self::$username];
 	}
 
-	public function getPostPassword()
+	public function getPostPassword(): string
 	{
 		return $this->post[self::$password];
 	}
@@ -178,23 +122,23 @@ class LoginView
 	}
 
 	private function getLoginMessage(): string
-    {
-        $message = '';
+	{
+		$message = '';
 
-        if ($this->postUsernameIsMissing) {
-            $message = 'Username is missing';
-        } else if ($this->postPasswordIsMissing) {
-            $message = 'Password is missing';
-        } else if ($this->wrongUsernameOrPassword) {
-            $message = $this->userStorage->getUserErrorMessage();
-        } else {
-            $message = 'Welcome';
-        }
+		if ($this->postUsernameIsMissing) {
+			$message = 'Username is missing';
+		} else if ($this->postPasswordIsMissing) {
+			$message = 'Password is missing';
+		} else if ($this->wrongUsernameOrPassword) {
+			$message = $this->userStorage->getUserErrorMessage();
+		} else {
+			$message = 'Welcome';
+		}
 
-        return $message;
-    }
+		return $message;
+	}
 
-	private function generateLoginFormHTML($message)
+	private function getLoginFormHTML(string $message): string
 	{
 		return '
 		<form method="post"> 
@@ -217,7 +161,7 @@ class LoginView
 	';
 	}
 
-	private function generateLogoutButtonHTML(string $message)
+	private function getLogoutButtonHTML(string $message): string
 	{
 		return '
 		<form method="post">
@@ -227,7 +171,7 @@ class LoginView
 	';
 	}
 
-	private function cookieMessageFlagIsSet(string $identifier)
+	private function cookieMessageFlagIsSet(string $identifier):bool
 	{
 		return isset($this->cookie[$identifier]);
 	}
@@ -237,3 +181,29 @@ class LoginView
 		return isset($this->cookie[self::$cookieUsername]) && isset($this->cookie[self::$cookiePassword]);
 	}
 }
+
+	// $userIsLoggedIn = false;
+	// 
+	// if ($this->userCookieIsSet()) {
+	// 	$this->getCookieUserCredentials();
+	// 	$userIsLoggedIn = true;
+	// }
+
+	// public function loadUserFromCookies(string $cookieName, string $cookiePassword): \model\User
+	// {
+
+
+	//     $userKey = self::$userKey;
+
+	//     // If the user exists in the session object, return it.
+	//     if (isset($this->session->$userKey)) {
+	//         return $this->session->$userKey;
+	//     }
+
+	//     if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
+	//         $_SESSION['showWelcomeCookie'] = true;
+	//         return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
+	//     } else {
+	//         return new User('', '');
+	//     }
+	// }

@@ -5,19 +5,17 @@ namespace model;
 class User
 {
     private static $minNameLength = 2;
-    public $username = null; // Maybe make these private. for now this works GREAT.
-    public $password = null;
+
+    private $username = null;
+    private $password = null;
 
 
-
-    public function __construct(string $name, string $password)
+    public function __construct(string $username, string $password)
     {
-        $this->username = $this->applyFilter($name);
-        $this->password = $password;
+        $this->checkUserDataForErrors($username, $password);
 
-        if (strlen($this->username) < self::$minNameLength) {
-            throw new \exception\TooShortNameException('Username needs to be at least 2 characters.');
-        }
+        $this->username = $this->applyFilter($username);
+        $this->password = $password;
     }
 
 
@@ -31,8 +29,6 @@ class User
         $this->password = $newPassword;
     }
 
-
-
     public function getUsername(): string
     {
         return $this->username;
@@ -44,8 +40,18 @@ class User
     }
 
 
+    private function checkUserDataForErrors(string $username, string $password): void
+    {
+        if ($this->username == '') {
+            throw new \exception\UsernameIsMissingException('Username is missing');
+        } else if ($this->password == '') {
+            throw new \exception\PasswordIsMissingException('Password is missing');
+        } else if (strlen($this->username) < self::$minNameLength) {
+            throw new \exception\TooShortUsernameException('Username needs to be at least 2 characters.');
+        }
+    }
 
-    public static function applyFilter(string $rawInput): string
+    private function applyFilter(string $rawInput): string
     {
         return trim(htmlentities($rawInput));
     }

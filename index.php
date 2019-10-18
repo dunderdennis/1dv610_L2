@@ -18,7 +18,10 @@ require_once('view/LoginView.php');
 require_once('view/RegisterView.php');
 require_once('view/DateTimeView.php');
 
-require_once('exception/TooShortNameException.php');
+require_once('exception/UsernameIsMissingException.php');
+require_once('exception/PasswordIsMissingException.php');
+require_once('exception/TooShortUsernameException.php');
+
 
 
 try {
@@ -35,5 +38,5 @@ try {
 
     $controller->runApplication();
 } catch (Exception $e) {
-    echo $e . $e->getMessage(); // Probably change this to like Error later
+    echo 'index.php: ' . $e . $e->getMessage(); // Probably change this to like Error later
 }
