@@ -4,7 +4,7 @@ namespace view;
 
 class DateTimeView
 {
-	public function response()
+	public function getHTML()
 	{
 		$timeString = date('l, \t\h\e jS \o\f F o, \T\h\e \t\i\m\e \i\s G:i:s');
 

@@ -107,6 +107,26 @@ class LoginView
 		return isset($this->post[self::$keepLoggedIn]);
 	}
 
+	public function getPostUsername()
+	{
+		return $this->post[self::$username];
+	}
+
+	public function getPostPassword()
+	{
+		return $this->post[self::$password];
+	}
+
+	public function userPressesLogoutButton(): bool
+	{
+		return isset($this->post[self::$logout]);
+	}
+
+	public function postHasUsername(): bool
+	{
+		return isset($this->post[self::$username]);
+	}
+
 	private function setUserCookies(\model\User $userToLogin): void
 	{
 		$thirtyDays = time() + 60 * 60 * 24 * 30;
@@ -167,25 +187,5 @@ class LoginView
 	private function userCookieIsSet(): bool
 	{
 		return isset($this->cookie[self::$cookieUsername]) && isset($this->cookie[self::$cookiePassword]);
-	}
-
-	private function getPostUsername()
-	{
-		return $this->post[self::$username];
-	}
-
-	private function getPostPassword()
-	{
-		return $this->post[self::$password];
-	}
-
-	private function userPressesLogoutButton(): bool
-	{
-		return isset($this->post[self::$logout]);
-	}
-
-	private function postHasUsername(): bool
-	{
-		return isset($this->post[self::$username]);
 	}
 }

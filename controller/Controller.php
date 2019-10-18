@@ -4,8 +4,12 @@ namespace controller;
 
 class Controller
 {
-    private $user;
+    private $userStorage;
+
     private $pageView;
+    private $loginView;
+    private $registerView;
+    private $dateTimeView;
 
 
     public function __construct(object $modules)
@@ -18,82 +22,96 @@ class Controller
         $this->dateTimeView = $modules->dateTimeView;
     }
 
-
-    public function doRenderPage(): void
+    public function runApplication(): void
     {
-        $body = '';
+        $this->listenForUserInputs();
 
+        $this->doRenderPage();
+    }
+
+
+    private function listenForUserInputs()
+    {
         if ($this->loginView->userPressesLoginButton()) {
-            $keepLoggedInChecked = $this->loginView->userhasCheckedKeepMeLoggedIn();
-            $this->doLoginAttempt($keepLoggedInChecked);
+            $this->doLoginAttempt();
         }
+    }
 
+    private function doRenderPage(): void
+    {
+        $body = $this->registerView->getHTML();
         $body .= $this->loginView->getHTML();
-
-        // ' . $this->renderRegisterLink($this->userWantsToRegister()) . '
-        // ' . $this->renderIsLoggedIn($isLoggedIn) . '
-        //     ' . $viewToDisplay . '
-        //     ' . $dateTimeView->show() . '
+        $body .= $this->dateTimeView->getHTML();
 
         $this->pageView->echoHTML($body);
     }
 
-    private function doLoginAttempt(bool $keepLoggedInChecked)
+    private function doLoginAttempt(): void
     {
-        $userToLogin = $this->checkLoginForErrors();
+        try {
+            $username = $this->loginView->getPostPassword();
+            $password = $this->loginView->getPostUsername();
+            $keepLoggedInChecked = $this->loginView->userhasCheckedKeepMeLoggedIn();
 
-        if (isset($userToLogin)) {
-            $userToLogin = $this->userStorage->findMatchingUser($userToLogin);
+            $userToLogin = new \model\User($username, $password);
+
+            $this->checkLoginForErrors($userToLogin);
 
             if (isset($userToLogin)) {
-                $this->userStorage->saveSessionUser($userToLogin);
-                $_SESSION['showWelcome'] = true;
+                $userToLogin = $this->userStorage->findMatchingUser($userToLogin);
 
-                if ($keepLoggedInChecked) {
-                    $this->setUserCookies($userToLogin);
+                if (isset($userToLogin)) {
+                    $this->userStorage->saveSessionUser($userToLogin);
+                    $_SESSION['showWelcome'] = true;
+
+                    if ($keepLoggedInChecked) {
+                        $this->setUserCookies($userToLogin);
+                    }
+
+                    header('location: ?');
+                } else {
+                    $this->wrongUsernameOrPassword = true;
                 }
-
-                header('location: ?');
-            } else {
-                $this->wrongUsernameOrPassword = true;
             }
+        } catch (\Exception $e) {
+            echo $e . $e->getMessage();
         }
     }
 
-    private function checkLoginForErrors()
-	{
-		$username = $this->loginView->getPostUsername();
-		$password = $this->loginView->getPostPassword();
+    private function checkLoginForErrors(\model\User $userToCheck)
+    {
+        $username = $this->loginView->getPostUsername();
+        $password = $this->loginView->getPostPassword();
 
-		if ($username == '' && $password == '') {
-			$this->postUsernameIsMissing = true;
-			$this->postPasswordIsMissing = true;
-		} else if ($username == '') {
-			$this->postUsernameIsMissing = true;
-		} else if ($password == '') {
-			$this->postPasswordIsMissing = true;
-			$_POST[self::$username] = $username;
-		} else {
-			return new \model\User($username, $password);
-		}
-	}
+        if ($username == '' && $password == '') {
+            $this->postUsernameIsMissing = true;
+            $this->postPasswordIsMissing = true;
+        } else if ($username == '') {
+            $this->postUsernameIsMissing = true;
+        } else if ($password == '') {
+            $this->postPasswordIsMissing = true;
+            $_POST[self::$username] = $username;
+        } else {
+            return new \model\User($username, $password);
+        }
+    }
 
-	private function getLoginMessage(): string
-	{
-		$message = '';
+    private function getLoginMessage(): string
+    {
+        $message = '';
 
-		if ($this->postUsernameIsMissing) {
-			$message = 'Username is missing';
-		} else if ($this->postPasswordIsMissing) {
-			$message = 'Password is missing';
-		} else if ($this->wrongUsernameOrPassword) {
-			$message = $this->userStorage->getUserErrorMessage();
-		} else {
-			$message = 'Welcome';
-		}
+        if ($this->postUsernameIsMissing) {
+            $message = 'Username is missing';
+        } else if ($this->postPasswordIsMissing) {
+            $message = 'Password is missing';
+        } else if ($this->wrongUsernameOrPassword) {
+            $message = $this->userStorage->getUserErrorMessage();
+        } else {
+            $message = 'Welcome';
+        }
 
-		return $message;
-	}
+        return $message;
+    }
 
     private function getIsLoggedInHTML(bool $isLoggedIn): string
     {

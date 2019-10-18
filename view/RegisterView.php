@@ -22,13 +22,41 @@ class RegisterView
 	private $usernameFieldValue = '';
 
 
-
-	public function __construct()
+	public function getHTML()
 	{
-		// $this->userStorage = $userStorage;
+		$response = '';
+		$message = '';
+
+		if (isset($_POST[self::$username])) {
+			$this->usernameFieldValue = $_POST[self::$username];
+		}
+
+		if ($this->userPressesRegisterButton()) {
+			$this->TryRegisteringNewUser();
+
+			$message = $this->getRegisteringErrors();
+		}
+
+		$response .= $this->generateRegisterFormHTML($message);
+
+		return $response;
 	}
 
+	// $this->getRegisterLinkHTML($this->userWantsToRegister());
 
+	private function getRegisterLinkHTML(bool $userWantsToRegister): string
+	{
+	  if ($userWantsToRegister) {
+		return '<a href="?">Back to login</a>';
+	  } else {
+		return '<a href="?register">Register a new user</a>';
+	  }
+	}
+  
+	private function userWantsToRegister(): bool
+	{
+	  return isset($this->request[self::$registerKey]);
+	}
 
 	private function getPostUsername()
 	{
@@ -54,25 +82,7 @@ class RegisterView
 
 
 
-	public function response()
-	{
-		$response = '';
-		$message = '';
 
-		if (isset($_POST[self::$username])) {
-			$this->usernameFieldValue = $_POST[self::$username];
-		}
-
-		if ($this->userPressesRegisterButton()) {
-			$this->TryRegisteringNewUser();
-
-			$message = $this->getRegisteringErrors();
-		}
-
-		$response .= $this->generateRegisterFormHTML($message);
-
-		return $response;
-	}
 
 	private function getRegisteringErrors(): string
 	{
