@@ -22,6 +22,7 @@ class Controller
         $this->dateTimeView = $modules->dateTimeView;
     }
 
+
     public function runApplication(): void
     {
         $this->listenForUserInputs();
@@ -53,9 +54,12 @@ class Controller
             $password = $this->loginView->getPostUsername();
             $keepLoggedInChecked = $this->loginView->userhasCheckedKeepMeLoggedIn();
 
-            $userToLogin = new \model\User($username, $password);
+            $loginData = new \model\LoginData($username, $password, $keepLoggedInChecked);
 
-            $this->checkLoginForErrors($userToLogin);
+            $loginOK = $this->userStorage->checkUserDataIsOK($loginData);
+
+
+
 
             if (isset($userToLogin)) {
                 $userToLogin = $this->userStorage->findMatchingUser($userToLogin);
@@ -76,41 +80,6 @@ class Controller
         } catch (\Exception $e) {
             echo $e . $e->getMessage();
         }
-    }
-
-    private function checkLoginForErrors(\model\User $userToCheck)
-    {
-        $username = $this->loginView->getPostUsername();
-        $password = $this->loginView->getPostPassword();
-
-        if ($username == '' && $password == '') {
-            $this->postUsernameIsMissing = true;
-            $this->postPasswordIsMissing = true;
-        } else if ($username == '') {
-            $this->postUsernameIsMissing = true;
-        } else if ($password == '') {
-            $this->postPasswordIsMissing = true;
-            $_POST[self::$username] = $username;
-        } else {
-            return new \model\User($username, $password);
-        }
-    }
-
-    private function getLoginMessage(): string
-    {
-        $message = '';
-
-        if ($this->postUsernameIsMissing) {
-            $message = 'Username is missing';
-        } else if ($this->postPasswordIsMissing) {
-            $message = 'Password is missing';
-        } else if ($this->wrongUsernameOrPassword) {
-            $message = $this->userStorage->getUserErrorMessage();
-        } else {
-            $message = 'Welcome';
-        }
-
-        return $message;
     }
 
     private function getIsLoggedInHTML(bool $isLoggedIn): string

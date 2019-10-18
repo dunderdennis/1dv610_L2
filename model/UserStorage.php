@@ -5,9 +5,12 @@ namespace model;
 class UserStorage
 {
     private static $userKey =  __CLASS__ .  "::User";
-    private static $url = 'UserDatabase.json';
-    private $session;
+    private static $passwordKey =  __CLASS__ .  "::Password";
+    private static $keepLoggedInKey =  __CLASS__ .  "::Keep";
 
+    private static $url = 'UserDatabase.json';
+
+    private $session;
     private $userDatabase;
 
 
@@ -19,52 +22,31 @@ class UserStorage
     }
 
 
-    public function loadUserDatabaseFromJSON(string $url): array
+    public function checkUserDataIsOK(\model\LoginData $loginData): bool
     {
-        $jsonData = file_get_contents($url, 1);
-        $userDatabaseObject = json_decode($jsonData);
-        return $userDatabaseObject;
-    }
+        $username = $loginData->username;
+        $password = $loginData->password;
 
-    public function loadUserFromCookies(string $cookieName, string $cookiePassword): \model\User
-    {
-
-
-        $userKey = self::$userKey;
-
-        // If the user exists in the session object, return it.
-        if (isset($this->session->$userKey)) {
-            return $this->session->$userKey;
-        } 
-        
-        if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
-            $_SESSION['showWelcomeCookie'] = true;
-            return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
+        if ($username == '') {
+            throw new \exception\TooShortNameException();
+        } else if ($password == '') {
+            throw new \exception\TooShortNameException();
         } else {
-            return new User('', '');
+            return true;
         }
     }
 
-    public function clearSessionUser()
+
+
+
+    public function clearSessionUser():void
     {
-        $_SESSION[self::$SESSION_KEY] = null;
+        $this->session[self::$SESSION_KEY] = null;
     }
 
-    public function clearCookieUser()
+    public function saveSessionUser(\model\User $userToBeSaved):void
     {
-        $cookieName = 'LoginView::CookieName';
-        $cookiePassword = 'LoginView::CookiePassword';
-
-        unset($_COOKIE[$cookieName]);
-        setcookie($cookieName, null, -1);
-
-        unset($_COOKIE[$cookiePassword]);
-        setcookie($cookiePassword, null, -1);
-    }
-
-    public function saveSessionUser(User $userToBeSaved)
-    {
-        $_SESSION[self::$SESSION_KEY] = $userToBeSaved;
+        $this->session[self::$SESSION_KEY] = $userToBeSaved;
     }
 
     public function saveUserToJSONDatabase(User $userToBeSaved)
@@ -97,5 +79,12 @@ class UserStorage
     public function getUserErrorMessage(): string
     {
         return $this->userErrorMessage;
+    }
+
+    private function loadUserDatabaseFromJSON(string $url): array
+    {
+        $jsonData = file_get_contents($url, 1);
+        $userDatabaseObject = json_decode($jsonData);
+        return $userDatabaseObject;
     }
 }

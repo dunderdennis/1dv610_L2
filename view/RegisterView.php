@@ -21,6 +21,20 @@ class RegisterView
 	private $passwordsDoNotMatch = false;
 	private $usernameFieldValue = '';
 
+	private $request;
+	private $post;
+	private $get;
+	private $cookie;
+
+
+	public function __construct()
+	{
+		$this->request = $_REQUEST;
+		$this->post = $_POST;
+		$this->get = $_GET;
+		$this->cookie = $_COOKIE;
+	}
+
 
 	public function getHTML()
 	{

@@ -11,6 +11,7 @@ require_once('controller/Controller.php');
 
 require_once('model/UserStorage.php');
 require_once('model/User.php');
+require_once('model/LoginData.php');
 
 require_once('view/PageView.php');
 require_once('view/LoginView.php');

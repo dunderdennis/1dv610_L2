@@ -21,7 +21,6 @@ class User
     }
 
 
-
     public function setUsername(string $newName): void
     {
         $this->username = $newName;

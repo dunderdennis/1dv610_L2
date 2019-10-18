@@ -16,9 +16,10 @@ class LoginView
 	private static $messageId = 		self::viewID . '::Message';
 
 
-	private $cookie;
-	private $session;
+	private $request;
 	private $post;
+	private $get;
+	private $cookie;
 
 	private $postUsernameIsMissing = false;
 	private $postPasswordIsMissing = false;
@@ -28,9 +29,10 @@ class LoginView
 
 	public function __construct()
 	{
-		$this->cookie = $_COOKIE;
-		$this->session = $_SESSION;
+		$this->request = $_REQUEST;
 		$this->post = $_POST;
+		$this->get = $_GET;
+		$this->cookie = $_COOKIE;
 	}
 
 
@@ -70,8 +72,6 @@ class LoginView
 			}
 
 			if ($this->userPressesLoginButton()) {
-				$this->doLoginAttempt(isset($_POST[self::$keep]));
-
 				$message = $this->getLoginMessage();
 			}
 
@@ -83,6 +83,37 @@ class LoginView
 		}
 		return $ret;
 	}
+
+	// public function loadUserFromCookies(string $cookieName, string $cookiePassword): \model\User
+    // {
+
+
+    //     $userKey = self::$userKey;
+
+    //     // If the user exists in the session object, return it.
+    //     if (isset($this->session->$userKey)) {
+    //         return $this->session->$userKey;
+    //     }
+
+    //     if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
+    //         $_SESSION['showWelcomeCookie'] = true;
+    //         return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
+    //     } else {
+    //         return new User('', '');
+    //     }
+    // }
+    
+    public function clearCookieUser()
+    {
+        $cookieName = 'LoginView::CookieName';
+        $cookiePassword = 'LoginView::CookiePassword';
+
+        unset($_COOKIE[$cookieName]);
+        setcookie($cookieName, null, -1);
+
+        unset($_COOKIE[$cookiePassword]);
+        setcookie($cookiePassword, null, -1);
+    }
 
 	public function getCookieUserCredentials(): \model\User
 	{
@@ -145,6 +176,23 @@ class LoginView
 			return $message;
 		}
 	}
+
+	private function getLoginMessage(): string
+    {
+        $message = '';
+
+        if ($this->postUsernameIsMissing) {
+            $message = 'Username is missing';
+        } else if ($this->postPasswordIsMissing) {
+            $message = 'Password is missing';
+        } else if ($this->wrongUsernameOrPassword) {
+            $message = $this->userStorage->getUserErrorMessage();
+        } else {
+            $message = 'Welcome';
+        }
+
+        return $message;
+    }
 
 	private function generateLoginFormHTML($message)
 	{
