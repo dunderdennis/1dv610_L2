@@ -4,36 +4,44 @@ namespace model;
 
 class UserStorage
 {
-    private static $SESSION_KEY =  __CLASS__ .  "::User";
+    private static $userKey =  __CLASS__ .  "::User";
+    private static $url = 'UserDatabase.json';
+    private $session;
 
     private $userDatabase;
-    private $userErrorMessage;
-    private $url;
+
 
     public function __construct()
     {
-        $this->url = 'UserDatabase.json';
-        $this->userDatabase = $this->loadUserDatabaseFromJSON($this->url);
+        $this->session = $_SESSION;
+
+        $this->userDatabase = $this->loadUserDatabaseFromJSON(self::$url);
     }
 
-    public function loadUserDatabaseFromJSON($url)
+
+    public function loadUserDatabaseFromJSON(string $url): array
     {
-        $data = file_get_contents($url, 1);
-        $phpObj = json_decode($data);
-        return $phpObj;
+        $jsonData = file_get_contents($url, 1);
+        $userDatabaseObject = json_decode($jsonData);
+        return $userDatabaseObject;
     }
 
-    public function loadUser()
+    public function loadUserFromCookies(string $cookieName, string $cookiePassword): \model\User
     {
-        $cookieName = 'LoginView::CookieName';
-        $cookiePassword = 'LoginView::CookiePassword';
-        if (isset($_SESSION[self::$SESSION_KEY])) {
-            return $_SESSION[self::$SESSION_KEY];
-        } else if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
+
+
+        $userKey = self::$userKey;
+
+        // If the user exists in the session object, return it.
+        if (isset($this->session->$userKey)) {
+            return $this->session->$userKey;
+        } 
+        
+        if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
             $_SESSION['showWelcomeCookie'] = true;
             return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
         } else {
-            return null;
+            return new User('', '');
         }
     }
 
@@ -59,7 +67,6 @@ class UserStorage
         $_SESSION[self::$SESSION_KEY] = $userToBeSaved;
     }
 
-
     public function saveUserToJSONDatabase(User $userToBeSaved)
     {
         array_push($this->userDatabase, $userToBeSaved);
@@ -68,7 +75,7 @@ class UserStorage
         file_put_contents($this->url, $this->userDatabase, FILE_USE_INCLUDE_PATH);
     }
 
-    public function findMatchingUser(\model\User $userToSearchFor)
+    public function findMatchingUser(\model\User $userToSearchFor): \model\User
     {
         $username = $userToSearchFor->getUsername();
         $password = $userToSearchFor->getPassword();
@@ -84,7 +91,7 @@ class UserStorage
                 $this->userErrorMessage = 'Wrong name or password';
             }
         }
-        return null;
+        return new \model\User('', '');
     }
 
     public function getUserErrorMessage(): string

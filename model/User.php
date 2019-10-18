@@ -10,13 +10,13 @@ class User
 
 
 
-    public function __construct(string $newName, string $newPassword)
+    public function __construct(string $name, string $password)
     {
-        $this->username = $this->applyFilter($newName);
-        $this->password = $newPassword;
+        $this->username = $this->applyFilter($name);
+        $this->password = $password;
 
         if (strlen($this->username) < self::$minNameLength) {
-            echo "throw new \Exception('Username needs to be at least 2 characters.')";
+            throw new \Exception('Username needs to be at least 2 characters.');
         }
     }
 

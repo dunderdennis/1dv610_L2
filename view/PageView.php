@@ -4,52 +4,53 @@ namespace view;
 
 class PageView
 {
+  private static $registerKey = 'register';
+  private static $cookieUsernameKey = 'LoginView::CookieName';
+  private static $cookiePasswordKey = 'LoginView::CookiePassword';
+
+  private $request;
+  private $cookie;
+
+
   public function __construct()
   {
-    // $this->user = $user;
+    $this->request = $_REQUEST;
+    $this->cookie = $_COOKIE;
   }
 
 
-
-  private function userWantsToRegister(): bool
+  public function echoHTML(string $body): void
   {
-    return isset($_REQUEST['register']);
-  }
+    $body .= $this->getRegisterLinkHTML($this->userWantsToRegister());
 
-
-
-  public function response(bool $isLoggedIn, LoginView $loginView, DateTimeView $dateTimeView, RegisterView $registerView): void
-  {
-    $viewToDisplay = '';
-    if ($this->userWantsToRegister()) {
-      $viewToDisplay = $registerView->response();
-    } else {
-      $viewToDisplay = $loginView->response($isLoggedIn);
-      if ($this->userWantsToLogin) { }
-    }
-
-    echo '<!DOCTYPE html>
+    echo "<!DOCTYPE html>
       <html>
         <head>
-          <meta charset="utf-8">
+          <meta charset='utf-8'>
           <title>df222fx login app</title>
         </head>
         <body>
-          <h1>Assignment 2</h1>
-          ' . $this->renderRegisterLink($this->userWantsToRegister()) . '
-          ' . $this->renderIsLoggedIn($isLoggedIn) . '
-          
-          <div class="container">
-              ' . $viewToDisplay . '
-              
-              ' . $dateTimeView->show() . '
+          <h1>Assignment 3</h1>          
+          <div class='container'>
+            $body
           </div>
          </body>
       </html>
-    ';
+    ";
   }
 
-  private function renderRegisterLink(bool $userWantsToRegister)
+  public function getCookieUserCredentials (): \model\User {
+    $usernameKey = self::$cookieUsernameKey;
+    $passwordKey = self::$cookiePasswordKey;
+
+    $username = $this->cookie->$usernameKey;
+    $password = $this->cookie->$passwordKey;
+
+    return new \model\User($username, $password);
+  }
+
+
+  private function getRegisterLinkHTML(bool $userWantsToRegister): string
   {
     if ($userWantsToRegister) {
       return '<a href="?">Back to login</a>';
@@ -58,13 +59,9 @@ class PageView
     }
   }
 
-  private function renderIsLoggedIn(bool $isLoggedIn): string
+  private function userWantsToRegister(): bool
   {
-    if ($isLoggedIn) {
-      // return '<h2>Logged in as ' . $this->user->getUsername() . '</h2>';
-      return '<h2>Logged in</h2>';
-    } else {
-      return '<h2>Not logged in</h2>';
-    }
+    $key = self::$registerKey;
+    return isset($this->request->$key);
   }
 }
