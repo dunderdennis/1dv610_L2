@@ -12,10 +12,10 @@ class User
 
     public function __construct(string $username, string $password)
     {
-        $this->checkUserDataForErrors($username, $password);
-
         $this->username = $this->applyFilter($username);
         $this->password = $password;
+
+        $this->checkUserDataForErrors();
     }
 
 
@@ -40,7 +40,7 @@ class User
     }
 
 
-    private function checkUserDataForErrors(string $username, string $password): void
+    private function checkUserDataForErrors(): void
     {
         if ($this->username == '') {
             throw new \exception\UsernameIsMissingException('Username is missing');

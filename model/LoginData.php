@@ -13,6 +13,6 @@ class LoginData
     {
         $this->username = $username;
         $this->password = $password;
-        $this->keeploggedIn = $keeploggedInChecked;
+        $this->keeploggedInChecked = $keeploggedInChecked;
     }
 }

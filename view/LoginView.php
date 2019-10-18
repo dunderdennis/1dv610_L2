@@ -25,6 +25,9 @@ class LoginView
 	private $postPasswordIsMissing = false;
 	private $wrongUsernameOrPassword = false;
 	private $usernameFieldValue = '';
+	private $message;
+
+
 
 
 	public function __construct()
@@ -33,24 +36,32 @@ class LoginView
 		$this->post = $_POST;
 		$this->get = $_GET;
 		$this->cookie = $_COOKIE;
+
+		$this->message = '';
 	}
 
 
-	public function getHTML($message)
+	public function getHTML(bool $userIsLoggedIn, string $message): string
 	{
-		$ret = $this->getLogoutButtonHTML($message);
+		$ret = $this->getLoggedInHTML($userIsLoggedIn);
 
-		$ret .= $this->getLoginFormHTML($message);
+		$this->message = $message;
+
+		if ($userIsLoggedIn || $this->userIsLoggedInWithCookies()) {
+			$ret .= $this->getLogoutButtonHTML($this->message);
+		} else {
+			$ret .= $this->getLoginFormHTML($this->message);
+		}
 
 		return $ret;
 	}
 
 
 
-	public function clearCookieUser()
+	public function clearUserCookies(): void
 	{
-		$cookieName = 'LoginView::CookieName';
-		$cookiePassword = 'LoginView::CookiePassword';
+		$cookieName = self::$cookieUsername;
+		$cookiePassword = self::$cookiePassword;
 
 		unset($_COOKIE[$cookieName]);
 		setcookie($cookieName, null, -1);
@@ -121,21 +132,13 @@ class LoginView
 		}
 	}
 
-	private function getLoginMessage(): string
+	private function getLoggedInHTML(bool $userIsLoggedIn): string
 	{
-		$message = '';
-
-		if ($this->postUsernameIsMissing) {
-			$message = 'Username is missing';
-		} else if ($this->postPasswordIsMissing) {
-			$message = 'Password is missing';
-		} else if ($this->wrongUsernameOrPassword) {
-			$message = $this->userStorage->getUserErrorMessage();
+		if ($userIsLoggedIn) {
+			return '<h2>Logged in</h2>';
 		} else {
-			$message = 'Welcome';
+			return '<h2>Not logged in</h2>';
 		}
-
-		return $message;
 	}
 
 	private function getLoginFormHTML(string $message): string
@@ -171,12 +174,12 @@ class LoginView
 	';
 	}
 
-	private function cookieMessageFlagIsSet(string $identifier):bool
+	private function cookieMessageFlagIsSet(string $identifier): bool
 	{
 		return isset($this->cookie[$identifier]);
 	}
 
-	private function userCookieIsSet(): bool
+	private function userIsLoggedInWithCookies(): bool
 	{
 		return isset($this->cookie[self::$cookieUsername]) && isset($this->cookie[self::$cookiePassword]);
 	}

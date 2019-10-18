@@ -11,6 +11,10 @@ class Controller
     private $registerView;
     private $dateTimeView;
 
+    private $userIsLoggedIn;
+    private $loginMessage;
+    private $registerMessage;
+
 
     public function __construct(object $modules)
     {
@@ -20,6 +24,10 @@ class Controller
         $this->loginView = $modules->loginView;
         $this->registerView = $modules->registerView;
         $this->dateTimeView = $modules->dateTimeView;
+
+        $this->loginMessage = '';
+        $this->registerMessage = '';
+        $this->userIsLoggedIn = $this->userStorage->userIsLoggedInBySession();
     }
 
 
@@ -31,17 +39,21 @@ class Controller
     }
 
 
-    private function listenForUserInputs()
+    private function listenForUserInputs(): void
     {
         if ($this->loginView->userPressesLoginButton()) {
             $this->doLoginAttempt();
+        }
+        if ($this->loginView->userPressesLogoutButton()) {
+            $this->doLogout();
         }
     }
 
     private function doRenderPage(): void
     {
         $body = $this->registerView->getHTML();
-        $body .= $this->loginView->getHTML();
+        $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->loginMessage);
+        $this->resetLoginMessage();
         $body .= $this->dateTimeView->getHTML();
 
         $this->pageView->echoHTML($body);
@@ -49,42 +61,31 @@ class Controller
 
     private function doLoginAttempt(): void
     {
-        $username = $this->loginView->getPostPassword();
-        $password = $this->loginView->getPostUsername();
+        $username = $this->loginView->getPostUsername();
+        $password = $this->loginView->getPostPassword();
         $keepLoggedInChecked = $this->loginView->userhasCheckedKeepMeLoggedIn();
 
         $loginData = new \model\LoginData($username, $password, $keepLoggedInChecked);
 
         try {
             $this->userStorage->logInUser($loginData);
+
+            // This code executes ONLY if login completed successfully.
+            $this->userIsLoggedIn = true;
+            $this->loginMessage = 'Welcome';
         } catch (\Exception $e) {
-            $this->message = $e->getMessage();
-        }
-
-        if (isset($userToLogin)) {
-            $userToLogin = $this->userStorage->findMatchingUser($userToLogin);
-
-            if (isset($userToLogin)) {
-                $this->userStorage->saveSessionUser($userToLogin);
-                $_SESSION['showWelcome'] = true;
-
-                if ($keepLoggedInChecked) {
-                    $this->setUserCookies($userToLogin);
-                }
-
-                header('location: ?');
-            } else {
-                $this->wrongUsernameOrPassword = true;
-            }
+            $this->loginMessage = $e->getMessage();
         }
     }
 
-    private function getIsLoggedInHTML(bool $isLoggedIn): string
+    private function doLogout(): void
     {
-        if ($isLoggedIn) {
-            return '<h2>Logged in</h2>';
-        } else {
-            return '<h2>Not logged in</h2>';
-        }
+        $this->loginView->clearUserCookies();
+        $this->userStorage->clearSessionUser();
+    }
+
+    private function resetLoginMessage(): void
+    {
+        $this->loginMessage = '';
     }
 }

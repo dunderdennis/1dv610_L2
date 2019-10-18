@@ -21,7 +21,7 @@ require_once('view/DateTimeView.php');
 require_once('exception/UsernameIsMissingException.php');
 require_once('exception/PasswordIsMissingException.php');
 require_once('exception/TooShortUsernameException.php');
-
+require_once('exception/WrongCredentialsException.php');
 
 
 try {

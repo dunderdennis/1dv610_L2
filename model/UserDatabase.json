@@ -1,1 +1,26 @@
-[{"username":"Admin","password":"Password"},{"username":"dennis","password":"asdasd"},{"username":"korven","password":"asdasd"},{"username":"test","password":"asdasd"},{"username":"asd","password":"asdasd"},{"username":"asdasd","password":"asdasd"}]
+[
+    {
+        "username": "Admin",
+        "password": "Password"
+    },
+    {
+        "username": "dennis",
+        "password": "asdasd"
+    },
+    {
+        "username": "korven",
+        "password": "asdasd"
+    },
+    {
+        "username": "test",
+        "password": "asdasd"
+    },
+    {
+        "username": "asd",
+        "password": "asdasd"
+    },
+    {
+        "username": "asdasd",
+        "password": "asdasd"
+    }
+]

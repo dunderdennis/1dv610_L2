@@ -3,6 +3,6 @@
 
 namespace exception;
 
-class TooShortUsernameException extends \Exception {
+class UsernameIsMissingException extends \Exception {
 
 }
