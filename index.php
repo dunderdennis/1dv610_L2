@@ -33,5 +33,5 @@ try {
 
     $controller->doRenderPage();
 } catch (Exception $e) {
-    echo 'Error:', $e->getMessage();
+    echo 'Exception:', $e->getMessage();
 }

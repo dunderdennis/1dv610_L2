@@ -5,17 +5,15 @@ namespace view;
 class PageView
 {
   private static $registerKey = 'register';
-  private static $cookieUsernameKey = 'LoginView::CookieName';
-  private static $cookiePasswordKey = 'LoginView::CookiePassword';
 
   private $request;
-  private $cookie;
+  // private $cookie;
 
 
   public function __construct()
   {
     $this->request = $_REQUEST;
-    $this->cookie = $_COOKIE;
+    // $this->cookie = $_COOKIE;
   }
 
 
@@ -39,16 +37,6 @@ class PageView
     ";
   }
 
-  public function getCookieUserCredentials (): \model\User {
-    $usernameKey = self::$cookieUsernameKey;
-    $passwordKey = self::$cookiePasswordKey;
-
-    $username = $this->cookie->$usernameKey;
-    $password = $this->cookie->$passwordKey;
-
-    return new \model\User($username, $password);
-  }
-
 
   private function getRegisterLinkHTML(bool $userWantsToRegister): string
   {
@@ -61,7 +49,6 @@ class PageView
 
   private function userWantsToRegister(): bool
   {
-    $key = self::$registerKey;
-    return isset($this->request->$key);
+    return isset($this->request[self::$registerKey]);
   }
 }

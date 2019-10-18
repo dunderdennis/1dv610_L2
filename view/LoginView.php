@@ -6,14 +6,19 @@ class LoginView
 {
 	const viewID = 'LoginView';
 
-	private static $login = self::viewID . '::Login';
-	private static $logout = self::viewID . '::Logout';
-	private static $username = self::viewID . '::UserName';
-	private static $password = self::viewID . '::Password';
-	private static $cookieName = self::viewID . '::CookieName';
-	private static $cookiePassword = self::viewID . '::CookiePassword';
-	private static $keep = self::viewID . '::KeepMeLoggedIn';
-	private static $messageId = self::viewID . 'LoginView::Message';
+	private static $login = 			self::viewID . '::Login';
+	private static $logout = 			self::viewID . '::Logout';
+	private static $username = 			self::viewID . '::UserName';
+	private static $password = 			self::viewID . '::Password';
+	private static $cookieUsername = 	self::viewID . '::CookieName';
+	private static $cookiePassword = 	self::viewID . '::CookiePassword';
+	private static $keepLoggedIn = 				self::viewID . '::KeepMeLoggedIn';
+	private static $messageId = 		self::viewID . '::Message';
+
+
+	private $cookie;
+	private $session;
+	private $post;
 
 	private $postUsernameIsMissing = false;
 	private $postPasswordIsMissing = false;
@@ -21,80 +26,23 @@ class LoginView
 	private $usernameFieldValue = '';
 
 
-
 	public function __construct()
 	{
-		// $this->userStorage = $userStorage;
+		$this->cookie = $_COOKIE;
+		$this->session = $_SESSION;
+		$this->post = $_POST;
 	}
 
 
-
-	private function setUserCookies(\model\User $userToLogin): void
+	public function getHTML()
 	{
-		$thirtyDays = time() + 60 * 60 * 24 * 30;
-
-		setcookie(self::$cookieName, $userToLogin->getUsername(), $thirtyDays);
-
-		$randString = substr(md5(rand()), 0, 40);
-
-		setcookie(self::$cookiePassword, $randString, $thirtyDays);
-	}
-
-	private function setSessionMessage(string $identifier, string $message): string
-	{
-		if ($_SESSION[$identifier]) {
-			$_SESSION[$identifier] = false;
-			return $message;
-		}
-	}
-
-
-
-	private function getPostUsername()
-	{
-		return $_POST[self::$username];
-	}
-
-	private function getPostPassword()
-	{
-		return $_POST[self::$password];
-	}
-
-
-
-	private function userPressesLoginButton(): bool
-	{
-		return isset($_POST[self::$login]);
-	}
-
-	private function userPressesLogoutButton(): bool
-	{
-		return isset($_POST[self::$logout]);
-	}
-
-	private function userCookieIsSet(): bool
-	{
-		return isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword]);
-	}
-
-	private function postHasUsername(): bool
-	{
-		return isset($_POST[self::$username]);
-	}
-
-	private function sessionMessageFlagIsSet(string $identifier): bool
-	{
-		return isset($_SESSION[$identifier]);
-	}
-
-
-
-	public function response(bool $userIsLoggedIn)
-	{
-		$response = '';
+		$ret = '';
 		$message = '';
 
+		$userIsLoggedIn = false;
+
 		if ($this->userCookieIsSet()) {
+			$this->getCookieUserCredentials();
 			$userIsLoggedIn = true;
 		}
 
@@ -108,13 +56,13 @@ class LoginView
 				header('location: ?');
 			}
 
-			if ($this->sessionMessageFlagIsSet('showWelcome')) {
+			if ($this->cookieMessageFlagIsSet('showWelcome')) {
 				$message = $this->setSessionMessage('showWelcome', 'Welcome');
-			} else if ($this->sessionMessageFlagIsSet('showWelcomeCookie')) {
+			} else if ($this->cookieMessageFlagIsSet('showWelcomeCookie')) {
 				$message = $this->setSessionMessage('showWelcomeCookie', 'Welcome back with cookie');
 			}
 
-			$response = $this->generateLogoutButtonHTML($message);
+			$ret = $this->generateLogoutButtonHTML($message);
 		} else {
 
 			if ($this->postHasUsername()) {
@@ -127,75 +75,56 @@ class LoginView
 				$message = $this->getLoginMessage();
 			}
 
-			if ($this->sessionMessageFlagIsSet('showBye')) {
+			if ($this->cookieMessageFlagIsSet('showBye')) {
 				$message = $this->setSessionMessage('showBye', 'Bye bye!');
 			}
 
-			$response = $this->generateLoginFormHTML($message);
+			$ret = $this->generateLoginFormHTML($message);
 		}
-		return $response;
+		return $ret;
 	}
 
-
-
-	private function doLoginAttempt(bool $keepLoggedInChecked)
+	public function getCookieUserCredentials(): \model\User
 	{
-		$userToLogin = $this->checkLoginForErrors();
+		$username = $this->getCookieUsernameKey;
+		$password = $this->getCookiePasswordKey;
 
-		if (isset($userToLogin)) {
-			$userToLogin = $this->userStorage->findMatchingUser($userToLogin);
+		assert(
+			isset($username) && isset($password),
+			'Cookie keys for username and password must be set in order to call this function.'
+		);
 
-			if (isset($userToLogin)) {
-				$this->userStorage->saveSessionUser($userToLogin);
-				$_SESSION['showWelcome'] = true;
-
-				if ($keepLoggedInChecked) {
-					$this->setUserCookies($userToLogin);
-				}
-
-				header('location: ?');
-			} else {
-				$this->wrongUsernameOrPassword = true;
-			}
-		}
+		return new \model\User($username, $password);
 	}
 
-	private function checkLoginForErrors()
+	public function userPressesLoginButton(): bool
 	{
-		$username = $this->getPostUsername();
-		$password = $this->getPostPassword();
-
-		if ($username == '' && $password == '') {
-			$this->postUsernameIsMissing = true;
-			$this->postPasswordIsMissing = true;
-		} else if ($username == '') {
-			$this->postUsernameIsMissing = true;
-		} else if ($password == '') {
-			$this->postPasswordIsMissing = true;
-			$_POST[self::$username] = $username;
-		} else {
-			return new \model\User($username, $password);
-		}
+		return isset($this->post[self::$login]);
 	}
 
-	private function getLoginMessage(): string
+	public function userhasCheckedKeepMeLoggedIn(): bool
 	{
-		$message = '';
-
-		if ($this->postUsernameIsMissing) {
-			$message = 'Username is missing';
-		} else if ($this->postPasswordIsMissing) {
-			$message = 'Password is missing';
-		} else if ($this->wrongUsernameOrPassword) {
-			$message = $this->userStorage->getUserErrorMessage();
-		} else {
-			$message = 'Welcome';
-		}
-
-		return $message;
+		return isset($this->post[self::$keepLoggedIn]);
 	}
 
+	private function setUserCookies(\model\User $userToLogin): void
+	{
+		$thirtyDays = time() + 60 * 60 * 24 * 30;
 
+		setcookie(self::$cookieUsername, $userToLogin->getUsername(), $thirtyDays);
+
+		$randString = substr(md5(rand()), 0, 40);
+
+		setcookie(self::$cookiePassword, $randString, $thirtyDays);
+	}
+
+	private function setSessionMessage(string $identifier, string $message): string
+	{
+		if ($_SESSION[$identifier]) {
+			$_SESSION[$identifier] = false;
+			return $message;
+		}
+	}
 
 	private function generateLoginFormHTML($message)
 	{
@@ -211,8 +140,8 @@ class LoginView
 				<label for="' . self::$password . '">Password :</label>
 				<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
 
-				<label for="' . self::$keep . '">Keep me logged in  :</label>
-				<input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
+				<label for="' . self::$keepLoggedIn . '">Keep me logged in  :</label>
+				<input type="checkbox" id="' . self::$keepLoggedIn . '" name="' . self::$keepLoggedIn . '" />
 				
 				<input type="submit" name="' . self::$login . '" value="login" />
 			</fieldset>
@@ -228,5 +157,35 @@ class LoginView
 			<input type="submit" name="' . self::$logout . '" value="logout"/>
 		</form>
 	';
+	}
+
+	private function cookieMessageFlagIsSet(string $identifier)
+	{
+		return isset($this->cookie[$identifier]);
+	}
+
+	private function userCookieIsSet(): bool
+	{
+		return isset($this->cookie[self::$cookieUsername]) && isset($this->cookie[self::$cookiePassword]);
+	}
+
+	private function getPostUsername()
+	{
+		return $this->post[self::$username];
+	}
+
+	private function getPostPassword()
+	{
+		return $this->post[self::$password];
+	}
+
+	private function userPressesLogoutButton(): bool
+	{
+		return isset($this->post[self::$logout]);
+	}
+
+	private function postHasUsername(): bool
+	{
+		return isset($this->post[self::$username]);
 	}
 }
