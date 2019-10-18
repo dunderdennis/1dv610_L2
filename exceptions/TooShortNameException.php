@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Model;
+namespace exception;
 
 class TooShortNameException extends \Exception {
 

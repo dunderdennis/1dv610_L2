@@ -2,11 +2,11 @@
 
 namespace view;
 
-class LayoutView
+class PageView
 {
-  public function __construct($user)
+  public function __construct()
   {
-    $this->user = $user;
+    // $this->user = $user;
   }
 
 

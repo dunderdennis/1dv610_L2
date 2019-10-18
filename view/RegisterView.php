@@ -23,9 +23,9 @@ class RegisterView
 
 
 
-	public function __construct(\model\UserStorage $userStorage)
+	public function __construct()
 	{
-		$this->userStorage = $userStorage;
+		// $this->userStorage = $userStorage;
 	}
 
 
