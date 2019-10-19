@@ -6,8 +6,8 @@ class User
 {
     private static $minNameLength = 2;
 
-    private $username = null;
-    private $password = null;
+    private $username;
+    private $password;
 
 
     public function __construct(string $username, string $password)

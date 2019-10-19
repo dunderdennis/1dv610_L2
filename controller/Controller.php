@@ -13,6 +13,7 @@ class Controller
 
     private $userIsLoggedIn;
     private $loginMessage;
+    private $userWantsToRegister;
     private $registerMessage;
 
 
@@ -25,9 +26,10 @@ class Controller
         $this->registerView = $modules->registerView;
         $this->dateTimeView = $modules->dateTimeView;
 
-        $this->loginMessage = '';
-        $this->registerMessage = '';
         $this->userIsLoggedIn = $this->userStorage->userIsLoggedInBySession();
+        $this->loginMessage = '';
+        $this->userWantsToRegister = false;
+        $this->registerMessage = '';
     }
 
 
@@ -47,13 +49,31 @@ class Controller
         if ($this->loginView->userPressesLogoutButton()) {
             $this->doLogout();
         }
+
+        if ($this->registerView->userPressesRegisterLink()) {
+            $this->userWantsToRegister = true;
+        }
+        if ($this->registerView->userPressesRegisterButton()) {
+            $this->doRegisterAttempt();
+        }
     }
 
     private function doRenderPage(): void
     {
-        $body = $this->registerView->getHTML();
-        $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->loginMessage);
-        $this->resetLoginMessage();
+        $body = '';
+
+        // If user is logged in, don't render the RegisterView.
+        if (!$this->userIsLoggedIn) {
+            $body .= $this->registerView->getHTML($this->userWantsToRegister, $this->registerMessage);
+            $this->resetRegisterMessage();
+        }
+
+        // If user wants to register, don't render the LoginView.
+        if (!$this->userWantsToRegister) {
+            $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->loginMessage);
+            $this->resetLoginMessage();
+        }
+
         $body .= $this->dateTimeView->getHTML();
 
         $this->pageView->echoHTML($body);
@@ -82,10 +102,34 @@ class Controller
     {
         $this->loginView->clearUserCookies();
         $this->userStorage->clearSessionUser();
+
+        header('location: ?');
+    }
+
+    private function doRegisterAttempt(): void
+    {
+        $username = $this->registerView->getPostUsername();
+        $password = $this->registerView->getPostPassword();
+
+        $registerData = new \model\LoginData($username, $password, false); // keepLoggedInChecked = false
+
+        try {
+            $this->userStorage->registerUser($registerData);
+
+            // This code executes ONLY if login completed successfully.
+            $this->registerMessage = 'Registered new user.';
+        } catch (\Exception $e) {
+            $this->registerMessage = $e->getMessage();
+        }
     }
 
     private function resetLoginMessage(): void
     {
         $this->loginMessage = '';
+    }
+
+    private function resetRegisterMessage(): void
+    {
+        $this->registerMessage = '';
     }
 }

@@ -4,99 +4,75 @@ namespace view;
 
 class RegisterView
 {
-	private static $register = 'RegisterView::Register';
-	private static $username = 'RegisterView::UserName';
-	private static $password = 'RegisterView::Password';
-	private static $repeatPassword = 'RegisterView::PasswordRepeat';
-	private static $messageId = 'RegisterView::Message';
+	const viewID = 'RegisterView';
 
+	private static $register = 			self::viewID . '::Register';
+	private static $username = 			self::viewID . '::UserName';
+	private static $password = 			self::viewID . '::Password';
+	private static $repeatPassword = 	self::viewID . '::PasswordRepeat';
+	private static $messageId = 		self::viewID . '::Message';
+
+	private static $registerRequest = 'register';
 	private static $minimumUsernameLength = 3;
 	private static $minimumPasswordLength = 6;
 
-	private $postUsernameIsMissing = false;
-	private $postPasswordIsMissing = false;
-	private $postPasswordIsTooShort = false;
-	private $postUsernameIsTooShort = false;
-	private $usernameContainsInvalidCharacters = false;
-	private $passwordsDoNotMatch = false;
-	private $usernameFieldValue = '';
-
-	private $request;
-	private $post;
-	private $get;
-	private $cookie;
+	private $message;
 
 
 	public function __construct()
 	{
-		$this->request = $_REQUEST;
-		$this->post = $_POST;
-		$this->get = $_GET;
-		$this->cookie = $_COOKIE;
+		$this->message = '';
 	}
 
 
-	public function getHTML()
+	public function getHTML(bool $userWantsToRegister, string $message): string
 	{
-		$response = '';
-		$message = '';
+		$ret = $this->getRegisterLinkHTML($userWantsToRegister);
 
-		if (isset($_POST[self::$username])) {
-			$this->usernameFieldValue = $_POST[self::$username];
+		$this->message = $message;
+
+		if ($userWantsToRegister) {
+			// The view keeps the entered username if registering fails
+			$usernameFieldValue = '';
+			if ($this->postHasUsername()) {
+				$usernameFieldValue = $this->getPostUsername();
+			}
+			$ret .= $this->getRegisterFormHTML($message, $usernameFieldValue);
 		}
 
-		if ($this->userPressesRegisterButton()) {
-			$this->TryRegisteringNewUser();
-
-			$message = $this->getRegisteringErrors();
-		}
-
-		$response .= $this->generateRegisterFormHTML($message);
-
-		return $response;
+		return $ret;
 	}
 
-	// $this->getRegisterLinkHTML($this->userWantsToRegister());
-
-	private function getRegisterLinkHTML(bool $userWantsToRegister): string
+	public function userPressesRegisterLink(): bool
 	{
-	  if ($userWantsToRegister) {
-		return '<a href="?">Back to login</a>';
-	  } else {
-		return '<a href="?register">Register a new user</a>';
-	  }
-	}
-  
-	private function userWantsToRegister(): bool
-	{
-	  return isset($this->request[self::$registerKey]);
+		return isset($_REQUEST[self::$registerRequest]);
 	}
 
-	private function getPostUsername()
-	{
-		return $_POST[self::$username];
-	}
-
-	private function getPostPassword()
-	{
-		return $_POST[self::$password];
-	}
-
-	private function getPostRepeatPassword()
-	{
-		return $_POST[self::$repeatPassword];
-	}
-
-
-
-	private function userPressesRegisterButton(): bool
+	public function userPressesRegisterButton(): bool
 	{
 		return isset($_POST[self::$register]);
 	}
 
+	public function getPostUsername(): string
+	{
+		return $_POST[self::$username];
+	}
+
+	public function getPostPassword(): string
+	{
+		return $_POST[self::$password];
+	}
 
 
+	private function postHasUsername(): bool
+	{
+		return isset($_POST[self::$username]);
+	}
 
+	private function getPostRepeatPassword(): string
+	{
+		return $_POST[self::$repeatPassword];
+	}
 
 	private function getRegisteringErrors(): string
 	{
@@ -126,7 +102,7 @@ class RegisterView
 		return $message;
 	}
 
-	private function TryRegisteringNewUser()
+	private function tryRegisteringNewUser()
 	{
 		$username = $this->getPostUsername();
 		$strippedUsername = strip_tags($username);
@@ -171,14 +147,21 @@ class RegisterView
 		}
 	}
 
-	private function pageRedirect($location)
+	private function pageRedirect($location): void
 	{
 		echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
 	}
 
+	private function getRegisterLinkHTML(bool $userWantsToRegister): string
+	{
+		if ($userWantsToRegister) {
+			return '<a href="?">Back to login</a>';
+		} else {
+			return '<a href="?' . self::$registerRequest . '">Register a new user</a>';
+		}
+	}
 
-
-	private function generateRegisterFormHTML($message)
+	private function getRegisterFormHTML(string $message, string $usernameFieldValue): string
 	{
 		return '
 		<form method="post" enctype="multipart/form-data">
@@ -188,7 +171,7 @@ class RegisterView
 			<br>
 
 			<label for="' . self::$username . '">Username :</label>
-			<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . strip_tags($this->usernameFieldValue) . '" />
+			<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $usernameFieldValue . '" />
 			<br>
 
 			<label for="' . self::$password . '">Password :</label>

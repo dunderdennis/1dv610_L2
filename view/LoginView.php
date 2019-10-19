@@ -12,31 +12,14 @@ class LoginView
 	private static $password = 			self::viewID . '::Password';
 	private static $cookieUsername = 	self::viewID . '::CookieName';
 	private static $cookiePassword = 	self::viewID . '::CookiePassword';
-	private static $keepLoggedIn = 				self::viewID . '::KeepMeLoggedIn';
+	private static $keepLoggedIn = 		self::viewID . '::KeepMeLoggedIn';
 	private static $messageId = 		self::viewID . '::Message';
 
-
-	private $request;
-	private $post;
-	private $get;
-	private $cookie;
-
-	private $postUsernameIsMissing = false;
-	private $postPasswordIsMissing = false;
-	private $wrongUsernameOrPassword = false;
-	private $usernameFieldValue = '';
 	private $message;
-
-
 
 
 	public function __construct()
 	{
-		$this->request = $_REQUEST;
-		$this->post = $_POST;
-		$this->get = $_GET;
-		$this->cookie = $_COOKIE;
-
 		$this->message = '';
 	}
 
@@ -50,27 +33,28 @@ class LoginView
 		if ($userIsLoggedIn || $this->userIsLoggedInWithCookies()) {
 			$ret .= $this->getLogoutButtonHTML($this->message);
 		} else {
-			$ret .= $this->getLoginFormHTML($this->message);
+			// The view keeps the entered username if login fails
+			$usernameFieldValue = '';
+			if ($this->postHasUsername()) {
+				$usernameFieldValue = $this->getPostUsername();
+			}
+
+			$ret .= $this->getLoginFormHTML($this->message, $usernameFieldValue);
 		}
 
 		return $ret;
 	}
 
-
-
-	public function clearUserCookies(): void
+	public function clearUserCookies(): void // kolla över den här funktionen sen. behövs verkligen båda kodraderna?
 	{
-		$cookieName = self::$cookieUsername;
-		$cookiePassword = self::$cookiePassword;
+		unset($_COOKIE[self::$cookieUsername]);
+		setcookie(self::$cookieUsername, null, -1);
 
-		unset($_COOKIE[$cookieName]);
-		setcookie($cookieName, null, -1);
-
-		unset($_COOKIE[$cookiePassword]);
-		setcookie($cookiePassword, null, -1);
+		unset($_COOKIE[self::$cookiePassword]);
+		setcookie(self::$cookiePassword, null, -1);
 	}
 
-	public function getCookieUserCredentials(): \model\User
+	public function getCookieUser(): \model\User
 	{
 		$username = $this->getCookieUsernameKey;
 		$password = $this->getCookiePasswordKey;
@@ -85,35 +69,35 @@ class LoginView
 
 	public function userPressesLoginButton(): bool
 	{
-		return isset($this->post[self::$login]);
+		return isset($_POST[self::$login]);
 	}
 
 	public function userhasCheckedKeepMeLoggedIn(): bool
 	{
-		return isset($this->post[self::$keepLoggedIn]);
+		return isset($_POST[self::$keepLoggedIn]);
 	}
 
 	public function getPostUsername(): string
 	{
-		return $this->post[self::$username];
+		return $_POST[self::$username];
 	}
 
 	public function getPostPassword(): string
 	{
-		return $this->post[self::$password];
+		return $_POST[self::$password];
 	}
 
 	public function userPressesLogoutButton(): bool
 	{
-		return isset($this->post[self::$logout]);
+		return isset($_POST[self::$logout]);
 	}
 
 	public function postHasUsername(): bool
 	{
-		return isset($this->post[self::$username]);
+		return isset($_POST[self::$username]);
 	}
 
-	private function setUserCookies(\model\User $userToLogin): void
+	public function setUserCookies(\model\User $userToLogin): void
 	{
 		$thirtyDays = time() + 60 * 60 * 24 * 30;
 
@@ -124,12 +108,10 @@ class LoginView
 		setcookie(self::$cookiePassword, $randString, $thirtyDays);
 	}
 
-	private function setSessionMessage(string $identifier, string $message): string
+
+	private function userIsLoggedInWithCookies(): bool
 	{
-		if ($_SESSION[$identifier]) {
-			$_SESSION[$identifier] = false;
-			return $message;
-		}
+		return isset($_COOKIE[self::$cookieUsername]) && isset($this->cookie[self::$cookiePassword]);
 	}
 
 	private function getLoggedInHTML(bool $userIsLoggedIn): string
@@ -141,7 +123,7 @@ class LoginView
 		}
 	}
 
-	private function getLoginFormHTML(string $message): string
+	private function getLoginFormHTML(string $message, string $usernameFieldValue): string
 	{
 		return '
 		<form method="post"> 
@@ -150,7 +132,7 @@ class LoginView
 				<p id="' . self::$messageId . '">' . $message . '</p>
 				
 				<label for="' . self::$username . '">Username :</label>
-				<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $this->usernameFieldValue . '" />
+				<input type="text" id="' . self::$username . '" name="' . self::$username . '" value="' . $usernameFieldValue . '" />
 
 				<label for="' . self::$password . '">Password :</label>
 				<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
@@ -173,18 +155,15 @@ class LoginView
 		</form>
 	';
 	}
-
-	private function cookieMessageFlagIsSet(string $identifier): bool
-	{
-		return isset($this->cookie[$identifier]);
-	}
-
-	private function userIsLoggedInWithCookies(): bool
-	{
-		return isset($this->cookie[self::$cookieUsername]) && isset($this->cookie[self::$cookiePassword]);
-	}
 }
 
+// private function setSessionMessage(string $identifier, string $message): string
+// {
+// 	if ($_SESSION[$identifier]) {
+// 		$_SESSION[$identifier] = false;
+// 		return $message;
+// 	}
+// }
 	// $userIsLoggedIn = false;
 	// 
 	// if ($this->userCookieIsSet()) {
