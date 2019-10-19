@@ -157,13 +157,6 @@ class LoginView
 	}
 }
 
-// private function setSessionMessage(string $identifier, string $message): string
-// {
-// 	if ($_SESSION[$identifier]) {
-// 		$_SESSION[$identifier] = false;
-// 		return $message;
-// 	}
-// }
 	// $userIsLoggedIn = false;
 	// 
 	// if ($this->userCookieIsSet()) {

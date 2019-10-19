@@ -61,7 +61,7 @@ class RegisterView
 		return $_POST[self::$password];
 	}
 
-	public function getPostRepeatPassword(): string
+	public function getPostRepeatedPassword(): string
 	{
 		return $_POST[self::$repeatPassword];
 	}

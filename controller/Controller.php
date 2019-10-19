@@ -12,7 +12,7 @@ class Controller
     private $dateTimeView;
 
     private $userIsLoggedIn;
-    private $loginMessage;
+    private $message;
     private $userWantsToRegister;
     private $registerMessage;
 
@@ -27,7 +27,7 @@ class Controller
         $this->dateTimeView = $modules->dateTimeView;
 
         $this->userIsLoggedIn = $this->userStorage->userIsLoggedInBySession();
-        $this->loginMessage = '';
+        $this->message = '';
         $this->userWantsToRegister = false;
         $this->registerMessage = '';
     }
@@ -70,7 +70,11 @@ class Controller
 
         // If user wants to register, don't render the LoginView.
         if (!$this->userWantsToRegister) {
-            $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->loginMessage);
+            // Gather and display the session message, if there is one.
+            if ($this->userStorage->sessionMessageIsSet()) {
+                $this->message = $this->userStorage->getAndResetSessionMessage();
+            }
+            $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
         }
 
@@ -92,9 +96,9 @@ class Controller
 
             // This code executes ONLY if login completed successfully.
             $this->userIsLoggedIn = true;
-            $this->loginMessage = 'Welcome';
+            $this->message = 'Welcome';
         } catch (\Exception $e) {
-            $this->loginMessage = $e->getMessage();
+            $this->message = $e->getMessage();
         }
     }
 
@@ -110,30 +114,24 @@ class Controller
     {
         $username = $this->registerView->getPostUsername();
         $password = $this->registerView->getPostPassword();
-        $repeatPassword = $this->registerView->getPostRepeatPassword();
+        $repeatedPassword = $this->registerView->getPostRepeatedPassword();
 
-        $registerData = new \model\RegisterData($username, $password, $repeatPassword);
+        $registerData = new \model\RegisterData($username, $password, $repeatedPassword);
 
         try {
             $this->userStorage->registerUser($registerData);
 
-            // This code executes ONLY if login completed successfully.
-            $this->registerMessage = 'Registered new user.';
-
+            // This code executes ONLY if registering completed successfully.
+            $this->userStorage->setSessionMessage('Registered new user.');
             header('location: ?');
         } catch (\Exception $e) {
             $this->registerMessage = $e->getMessage();
         }
     }
 
-	// private function pageRedirect($location): void
-	// {
-	// 	echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
-	// }
-
     private function resetLoginMessage(): void
     {
-        $this->loginMessage = '';
+        $this->message = '';
     }
 
     private function resetRegisterMessage(): void

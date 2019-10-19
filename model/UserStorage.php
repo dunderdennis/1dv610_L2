@@ -5,8 +5,7 @@ namespace model;
 class UserStorage
 {
     private static $userKey =  __CLASS__ .  "::User";
-    // private static $passwordKey =  __CLASS__ .  "::Password";
-    // private static $keepLoggedInKey =  __CLASS__ .  "::Keep";
+    private static $messageKey =  __CLASS__ .  "::Message";
     private static $url = 'UserDatabase.json';
 
     private $userDatabase;
@@ -37,51 +36,75 @@ class UserStorage
         foreach ($this->userDatabase as $user) {
             if ($username == $user->username && $password == $user->password) {
                 return;
-            } else {
-                throw new \exception\WrongCredentialsException('Wrong name or password');
             }
         }
+        throw new \exception\WrongCredentialsException('Wrong name or password');
     }
 
-    public function registerUser(\model\LoginData $loginData): void
+    public function registerUser(\model\RegisterData $registerData): void
     {
-        $username = $loginData->username;
-        $password = $loginData->password;
+        $username = $registerData->username;
+        $password = $registerData->password;
+        $repeatedPassword = $registerData->repeatedPassword;
 
         $userToRegister = new User($username, $password);
 
-        $this->checkUserRegisteringForErrors($userToRegister);
+        $this->checkUserRegisteringForErrors($userToRegister, $repeatedPassword);
 
-        // $this->saveUserToJSONDatabase($userToRegister);
+        $this->saveUserToJSONDatabase($userToRegister);
     }
 
-    public function checkUserRegisteringForErrors(\model\User $userToSearchFor): void
+    public function checkUserRegisteringForErrors(\model\User $userToRegister, string $repeatedPassword): void
     {
-        $username = $userToSearchFor->getUsername();
-        $password = $userToSearchFor->getPassword();
-        $strippedUsername = strip_tags($username);
-		$repeatedPassword = $this->getPostRepeatPassword();
+        $username = $userToRegister->getUsername();
+        $password = $userToRegister->getPassword();
 
+        $strippedUsername = strip_tags($username);
+
+        // Look if a user with the same username already exists
         foreach ($this->userDatabase as $user) {
             if ($username == $user->username) {
                 throw new \exception\UserAlreadyExistsException('User exists, pick another username.');
-            } 
+            }
         }
 
         if ($username != $strippedUsername) {
-			$message .= 'Username contains invalid characters.';
-		}
-		if ($password != $repeatedPassword) {
-			$message .= '<br>Passwords do not match.';
+            throw new \exception\UsernameContainsInvalidCharactersException('Username contains invalid characters.');
+        }
+        if ($password != $repeatedPassword) {
+            throw new \exception\PasswordsDoNotMatchException('Passwords do not match.');
         }
     }
 
     public function saveUserToJSONDatabase(User $userToBeSaved): void
     {
-        array_push($this->userDatabase, $userToBeSaved);
+        // Convert User-object into an anonymous object, in order to save it as JSON
+        $userObject = new \stdClass();
+        $userObject->username = $userToBeSaved->getUsername();
+        $userObject->password = $userToBeSaved->getPassword();
+
+        array_push($this->userDatabase, $userObject);
 
         $this->userDatabase = json_encode($this->userDatabase);
-        file_put_contents($this->url, $this->userDatabase, FILE_USE_INCLUDE_PATH);
+
+        file_put_contents(self::$url, $this->userDatabase, FILE_USE_INCLUDE_PATH);
+    }
+
+    public function setSessionMessage(string $message): void
+    {
+        $_SESSION[self::$messageKey] = $message;
+    }
+
+    public function sessionMessageIsSet(): bool
+    {
+        return isset($_SESSION[self::$messageKey]);
+    }
+
+    public function getAndResetSessionMessage(): string
+    {
+        $ret = $_SESSION[self::$messageKey];
+        $_SESSION[self::$messageKey] = null;
+        return $ret;
     }
 
     public function setSessionUser(string $username): void
