@@ -38,7 +38,7 @@ class UserStorage
                 return;
             }
         }
-        throw new \exception\WrongCredentialsException('Wrong name or password');
+        throw new \model\WrongCredentialsException('Wrong name or password');
     }
 
     public function registerUser(\model\RegisterData $registerData): void
@@ -64,15 +64,15 @@ class UserStorage
         // Look if a user with the same username already exists
         foreach ($this->userDatabase as $user) {
             if ($username == $user->username) {
-                throw new \exception\UserAlreadyExistsException('User exists, pick another username.');
+                throw new \model\UserAlreadyExistsException('User exists, pick another username.');
             }
         }
 
         if ($username != $strippedUsername) {
-            throw new \exception\UsernameContainsInvalidCharactersException('Username contains invalid characters.');
+            throw new \model\UsernameContainsInvalidCharactersException('Username contains invalid characters.');
         }
         if ($password != $repeatedPassword) {
-            throw new \exception\PasswordsDoNotMatchException('Passwords do not match.');
+            throw new \model\PasswordsDoNotMatchException('Passwords do not match.');
         }
     }
 

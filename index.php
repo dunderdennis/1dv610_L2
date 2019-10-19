@@ -13,18 +13,12 @@ require_once('model/UserStorage.php');
 require_once('model/User.php');
 require_once('model/LoginData.php');
 require_once('model/RegisterData.php');
+require_once('model/Exceptions.php');
 
 require_once('view/PageView.php');
 require_once('view/LoginView.php');
 require_once('view/RegisterView.php');
 require_once('view/DateTimeView.php');
-
-require_once('exception/UsernameIsMissingException.php');
-require_once('exception/PasswordIsMissingException.php');
-require_once('exception/TooShortUsernameException.php');
-require_once('exception/TooShortPasswordException.php');
-require_once('exception/WrongCredentialsException.php');
-require_once('exception/UserAlreadyExistsException.php');
 
 
 try {

@@ -44,13 +44,13 @@ class User
     private function checkUserDataForErrors(): void
     {
         if ($this->username == '') {
-            throw new \exception\UsernameIsMissingException('Username is missing');
+            throw new \model\UsernameIsMissingException('Username is missing');
         } else if ($this->password == '') {
-            throw new \exception\PasswordIsMissingException('Password is missing');
+            throw new \model\PasswordIsMissingException('Password is missing');
         } else if (strlen($this->username) < self::$minUsernameLength) {
-            throw new \exception\TooShortUsernameException('Username needs to be at least ' . self::$minUsernameLength . ' characters.');
+            throw new \model\TooShortUsernameException('Username needs to be at least ' . self::$minUsernameLength . ' characters.');
         } else if (strlen($this->password) < self::$minPasswordLength) {
-            throw new \exception\TooShortPasswordException('Password needs to be at least ' . self::$minPasswordLength . ' characters.');
+            throw new \model\TooShortPasswordException('Password needs to be at least ' . self::$minPasswordLength . ' characters.');
         }
     }
 
