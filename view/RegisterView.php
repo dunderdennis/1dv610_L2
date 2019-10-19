@@ -13,8 +13,6 @@ class RegisterView
 	private static $messageId = 		self::viewID . '::Message';
 
 	private static $registerRequest = 'register';
-	private static $minimumUsernameLength = 3;
-	private static $minimumPasswordLength = 6;
 
 	private $message;
 
@@ -63,93 +61,14 @@ class RegisterView
 		return $_POST[self::$password];
 	}
 
-
-	private function postHasUsername(): bool
-	{
-		return isset($_POST[self::$username]);
-	}
-
-	private function getPostRepeatPassword(): string
+	public function getPostRepeatPassword(): string
 	{
 		return $_POST[self::$repeatPassword];
 	}
 
-	private function getRegisteringErrors(): string
+	private function postHasUsername(): bool
 	{
-		$message = '';
-
-		if ($this->postUsernameIsMissing) {
-			$message .= 'Username is missing';
-		}
-		if ($this->postUsernameIsTooShort) {
-			$message .= 'Username has too few characters, at least 3 characters.';
-		}
-		if ($this->usernameContainsInvalidCharacters) {
-			$message .= 'Username contains invalid characters.';
-		}
-
-
-		if ($this->postPasswordIsMissing) {
-			$message .= '<br>Password is missing';
-		}
-		if ($this->postPasswordIsTooShort) {
-			$message .= '<br>Password has too few characters, at least 6 characters.';
-		}
-		if ($this->passwordsDoNotMatch) {
-			$message .= '<br>Passwords do not match.';
-		}
-
-		return $message;
-	}
-
-	private function tryRegisteringNewUser()
-	{
-		$username = $this->getPostUsername();
-		$strippedUsername = strip_tags($username);
-		$password = $this->getPostPassword();
-		$repeatedPassword = $this->getPostRepeatPassword();
-
-		$newUserOk = true;
-
-		if ($username == '') {
-			$this->postUsernameIsMissing = true;
-			$newUserOk = false;
-		}
-		if (strlen($username) < self::$minimumUsernameLength) {
-			$this->postUsernameIsTooShort = true;
-			$newUserOk = false;
-		}
-		if ($username != $strippedUsername) {
-			$this->usernameContainsInvalidCharacters = true;
-			$newUserOk = false;
-		}
-
-		if ($password == '') {
-			$this->postPasswordIsMissing = true;
-			$newUserOk = false;
-		}
-		if (strlen($password) < self::$minimumPasswordLength) {
-			$this->postPasswordIsTooShort = true;
-			$newUserOk = false;
-		}
-		if ($password != $repeatedPassword) {
-			$this->passwordsDoNotMatch = true;
-			$newUserOk = false;
-		}
-
-		if ($newUserOk) {
-			$newUser = new \model\User($username, $password);
-			$this->userStorage->saveSessionUser($newUser);
-			$this->userStorage->saveUserToJSONDatabase($newUser);
-
-			$homepage = '?';
-			$this->pageRedirect($homepage);
-		}
-	}
-
-	private function pageRedirect($location): void
-	{
-		echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
+		return isset($_POST[self::$username]);
 	}
 
 	private function getRegisterLinkHTML(bool $userWantsToRegister): string

@@ -110,18 +110,26 @@ class Controller
     {
         $username = $this->registerView->getPostUsername();
         $password = $this->registerView->getPostPassword();
+        $repeatPassword = $this->registerView->getPostRepeatPassword();
 
-        $registerData = new \model\LoginData($username, $password, false); // keepLoggedInChecked = false
+        $registerData = new \model\RegisterData($username, $password, $repeatPassword);
 
         try {
             $this->userStorage->registerUser($registerData);
 
             // This code executes ONLY if login completed successfully.
             $this->registerMessage = 'Registered new user.';
+
+            header('location: ?');
         } catch (\Exception $e) {
             $this->registerMessage = $e->getMessage();
         }
     }
+
+	// private function pageRedirect($location): void
+	// {
+	// 	echo '<META HTTP-EQUIV="Refresh" Content="0; URL=' . $location . '">';
+	// }
 
     private function resetLoginMessage(): void
     {

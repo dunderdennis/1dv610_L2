@@ -4,7 +4,8 @@ namespace model;
 
 class User
 {
-    private static $minNameLength = 2;
+    private static $minUsernameLength = 2;
+    private static $minPasswordLength = 6;
 
     private $username;
     private $password;
@@ -46,8 +47,10 @@ class User
             throw new \exception\UsernameIsMissingException('Username is missing');
         } else if ($this->password == '') {
             throw new \exception\PasswordIsMissingException('Password is missing');
-        } else if (strlen($this->username) < self::$minNameLength) {
-            throw new \exception\TooShortUsernameException('Username needs to be at least 2 characters.');
+        } else if (strlen($this->username) < self::$minUsernameLength) {
+            throw new \exception\TooShortUsernameException('Username needs to be at least ' . self::$minUsernameLength . ' characters.');
+        } else if (strlen($this->password) < self::$minPasswordLength) {
+            throw new \exception\TooShortPasswordException('Password needs to be at least ' . self::$minPasswordLength . ' characters.');
         }
     }
 

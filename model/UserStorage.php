@@ -50,7 +50,30 @@ class UserStorage
 
         $userToRegister = new User($username, $password);
 
+        $this->checkUserRegisteringForErrors($userToRegister);
+
         // $this->saveUserToJSONDatabase($userToRegister);
+    }
+
+    public function checkUserRegisteringForErrors(\model\User $userToSearchFor): void
+    {
+        $username = $userToSearchFor->getUsername();
+        $password = $userToSearchFor->getPassword();
+        $strippedUsername = strip_tags($username);
+		$repeatedPassword = $this->getPostRepeatPassword();
+
+        foreach ($this->userDatabase as $user) {
+            if ($username == $user->username) {
+                throw new \exception\UserAlreadyExistsException('User exists, pick another username.');
+            } 
+        }
+
+        if ($username != $strippedUsername) {
+			$message .= 'Username contains invalid characters.';
+		}
+		if ($password != $repeatedPassword) {
+			$message .= '<br>Passwords do not match.';
+        }
     }
 
     public function saveUserToJSONDatabase(User $userToBeSaved): void
