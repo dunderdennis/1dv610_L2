@@ -4,7 +4,7 @@ namespace model;
 
 class RegistrationValidator
 {
-    private static $minUsernameLength = 2;
+    private static $minUsernameLength = 3;
     private static $minPasswordLength = 6;
 
 

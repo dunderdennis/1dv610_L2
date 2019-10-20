@@ -22,14 +22,14 @@ class UserStorage
 
         $userToLogin = new User($username, $password);
 
-        $this->checkUserLoginForErrors($userToLogin);
+        $this->checkUserCredentials($userToLogin);
         $this->setSessionUser($userToLogin->getUsername());
     }
 
-    public function checkUserLoginForErrors(\model\User $userToSearchFor): void
+    public function checkUserCredentials(\model\User $userToLogin): void
     {
-        $username = $userToSearchFor->getUsername();
-        $password = $userToSearchFor->getPassword();
+        $username = $userToLogin->getUsername();
+        $password = $userToLogin->getPassword();
 
         foreach ($this->userDatabase as $dbUser) {
             if ($username == $dbUser->username && $password == $dbUser->password) {

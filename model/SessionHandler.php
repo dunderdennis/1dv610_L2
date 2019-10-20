@@ -20,7 +20,7 @@ class SessionHandler
     public function getAndResetSessionMessage(): string
     {
         $ret = $_SESSION[self::$messageKey];
-        $_SESSION[self::$messageKey] = null;
+        unset($_SESSION[self::$messageKey]);
         return $ret;
     }
 

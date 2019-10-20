@@ -30,6 +30,7 @@ class Application
 
         $this->modules->userStorage = new \model\UserStorage();
         $this->modules->sessionHandler = new \model\SessionHandler();
+        $this->modules->loginValidator = new \model\LoginValidator();
         $this->modules->registrationValidator = new \model\RegistrationValidator();
 
         $this->modules->pageView = new \view\PageView();

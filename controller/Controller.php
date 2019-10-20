@@ -6,6 +6,7 @@ class Controller
 {
     private $userStorage;
     private $sessionHandler;
+    private $loginValidator;
     private $registrationValidator;
 
     private $pageView;
@@ -17,6 +18,7 @@ class Controller
 
     private $message = '';
     private $userWantsToRegister = false;
+    private $loginErrorMessage = '';
     private $registerErrorMessage = '';
 
 
@@ -24,6 +26,7 @@ class Controller
     {
         $this->userStorage = $modules->userStorage;
         $this->sessionHandler = $modules->sessionHandler;
+        $this->loginValidator = $modules->loginValidator;
         $this->registrationValidator = $modules->registrationValidator;
 
         $this->pageView = $modules->pageView;
@@ -74,7 +77,9 @@ class Controller
         if (!$this->userWantsToRegister) {
             // Gather and display the session message, if there is one.
             if ($this->sessionHandler->sessionMessageIsSet()) {
-                $this->message = $this->sessionHandler->getAndResetSessionMessage();
+                // $this->message = $this->sessionHandler->getAndResetSessionMessage();
+                $keps = $this->sessionHandler->getAndResetSessionMessage();
+                var_dump($keps);
             }
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
@@ -93,16 +98,33 @@ class Controller
 
         $loginData = new \model\LoginData($username, $password, $keepLoggedInChecked);
 
-        // Try for and catch login errors
+        // Check for login errors
         try {
-            $this->userStorage->logInUser($loginData);
-
-            // This code executes ONLY if login completed successfully.
-            $this->userIsLoggedIn = true;
-            $this->message = 'Welcome';
-        } catch (\Exception $e) {
-            $this->message = $e->getMessage();
+            $this->loginValidator->checkIfUsernameIsEmpty($username);
+            $this->loginValidator->checkIfPasswordIsEmpty($password);
+        } catch (\model\UsernameIsMissingException | \model\PasswordIsMissingException $e) {
+            $this->loginErrorMessage = $e->getMessage();
+            $this->sessionHandler->setSessionMessage($this->loginErrorMessage);
+            var_dump($this->loginErrorMessage);
+            // TILLS HIT ALLT OK
         }
+
+        // If error message is empty, login is OK and the application proceeds to try and login the user.
+        if ($this->loginErrorMessage = '') {
+            try {
+                $this->userStorage->logInUser($loginData);
+
+                $this->userIsLoggedIn = true;
+                $this->message = 'Welcome';
+            } catch (\model\WrongCredentialsException $e) {
+                $this->loginErrorMessage = $e->getMessage();
+                $this->message = $this->loginErrorMessage;
+            }
+        } else {
+            $this->message = $this->loginErrorMessage;
+        }
+
+        $this->sessionHandler->setSessionMessage($this->message);
     }
 
     private function doLogout(): void
@@ -149,7 +171,7 @@ class Controller
             $this->registerErrorMessage .= $e->getMessage() . '<br>';
         }
 
-        // If message is empty, registration is OK and the application proceeds to register the new user.
+        // If error message is empty, registration is OK and the application proceeds to register the new user.
         if ($this->registerErrorMessage == '') {
             $this->userStorage->registerUser($registerData);
             $this->sessionHandler->setSessionMessage('Registered new user.');
