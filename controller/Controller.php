@@ -17,7 +17,7 @@ class Controller
 
     private $message = '';
     private $userWantsToRegister = false;
-    private $registerMessage = '';
+    private $registerErrorMessage = '';
 
 
     public function __construct(object $modules)
@@ -25,7 +25,7 @@ class Controller
         $this->userStorage = $modules->userStorage;
         $this->sessionHandler = $modules->sessionHandler;
         $this->registrationValidator = $modules->registrationValidator;
-        
+
         $this->pageView = $modules->pageView;
         $this->loginView = $modules->loginView;
         $this->registerView = $modules->registerView;
@@ -66,7 +66,7 @@ class Controller
 
         // If user is logged in, don't render the RegisterView.
         if (!$this->userIsLoggedIn) {
-            $body .= $this->registerView->getHTML($this->userWantsToRegister, $this->registerMessage);
+            $body .= $this->registerView->getHTML($this->userWantsToRegister, $this->registerErrorMessage);
             $this->resetRegisterMessage();
         }
 
@@ -122,27 +122,40 @@ class Controller
 
         $registerData = new \model\RegisterData($username, $password, $repeatedPassword);
 
-        // Try for and catch registering errors
-        try { $this->registrationValidator->checkForTooShortUsername($username); } catch (\Exception $e) {
-            $this->registerMessage .= $e->getMessage();
+        // Check for registering errors
+        try {
+            $this->registrationValidator->checkForTooShortUsername($username);
+        } catch (\model\TooShortUsernameException $e) {
+            $this->registerErrorMessage .= $e->getMessage() . '<br>';
         }
-        try { $this->registrationValidator->checkForTooShortPassword($password); } catch (\Exception $e) {
-            $this->registerMessage .= $e->getMessage();
+        try {
+            $this->registrationValidator->checkForTooShortPassword($password);
+        } catch (\model\TooShortPasswordException $e) {
+            $this->registerErrorMessage .= $e->getMessage() . '<br>';
         }
-        try { $this->registrationValidator->checkForUserAlreadyExists($this->userStorage, $username); } catch (\Exception $e) {
-            $this->registerMessage .= $e->getMessage();
+        try {
+            $this->registrationValidator->checkForUserAlreadyExists($this->userStorage, $username);
+        } catch (\model\UserAlreadyExistsException $e) {
+            $this->registerErrorMessage .= $e->getMessage() . '<br>';
         }
-        try { $this->registrationValidator->checkForUsernameContainsInvalidCharacters($username); } catch (\Exception $e) {
-            $this->registerMessage .= $e->getMessage();
+        try {
+            $this->registrationValidator->checkForUsernameContainsInvalidCharacters($username);
+        } catch (\model\UsernameContainsInvalidCharactersException $e) {
+            $this->registerErrorMessage .= $e->getMessage() . '<br>';
         }
-        try { $this->registrationValidator->checkForPasswordsDoNotMatch($password, $repeatedPassword); } catch (\Exception $e) {
-            $this->registerMessage .= $e->getMessage();
+        try {
+            $this->registrationValidator->checkForPasswordsDoNotMatch($password, $repeatedPassword);
+        } catch (\model\PasswordsDoNotMatchException $e) {
+            $this->registerErrorMessage .= $e->getMessage() . '<br>';
         }
 
+        // If message is empty, registration is OK and the application proceeds to register the new user.
+        if ($this->registerErrorMessage == '') {
+            $this->userStorage->registerUser($registerData);
+            $this->sessionHandler->setSessionMessage('Registered new user.');
 
-        $this->userStorage->registerUser($registerData);
-        $this->sessionHandler->setSessionMessage('Registered new user.');
-        header('location: ?');
+            header('location: ?');
+        }
     }
 
     private function resetLoginMessage(): void
@@ -152,6 +165,6 @@ class Controller
 
     private function resetRegisterMessage(): void
     {
-        $this->registerMessage = '';
+        $this->registerErrorMessage = '';
     }
 }
