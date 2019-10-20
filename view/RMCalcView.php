@@ -9,14 +9,16 @@ class RMCalcView
 	private static $weight = 	self::viewID . '::Weight';
 	private static $reps = 		self::viewID . '::Reps';
 	private static $submit = 	self::viewID . '::Submit';
+	private static $messageId = self::viewID . '::Message';
 
-	public function getHTML(): string
+
+	public function getHTML(string $message): string
 	{
 		$ret = "<h3>1RM Calculator</h3>
 		<a href='https://en.wikipedia.org/wiki/One-repetition_maximum'>What's a 1RM? (wikipedia)</a>
 		<br><br>";
 
-		$ret .= $this->getRMCalcFormHTML();
+		$ret .= $this->getRMCalcFormHTML($message);
 
 		if ($this->postIsSet()) {
 			$weight = $this->getPostWeight();
@@ -26,6 +28,11 @@ class RMCalcView
 		}
 
 		return $ret;
+	}
+
+	public function userPressesSubmitButton(): bool
+	{
+		return isset($_POST[self::$submit]);
 	}
 
 	public function getPostWeight(): string
@@ -43,7 +50,8 @@ class RMCalcView
 		return (isset($_POST[self::$reps]) && $_POST[self::$weight]);
 	}
 
-	private function getRMCalcFormHTML(): string
+
+	private function getRMCalcFormHTML(string $message): string
 	{
 		return '
 		<form method="post"> 
@@ -54,9 +62,11 @@ class RMCalcView
 				<input type="text" id="' . self::$weight . '" name="' . self::$weight . '"/>
 
 				<label for="' . self::$reps . '">Reps :</label>
-				<input type="password" id="' . self::$reps . '" name="' . self::$reps . '" />
+				<input type="text" id="' . self::$reps . '" name="' . self::$reps . '" />
 				
 				<input type="submit" name="' . self::$submit . '" value="Submit" />
+
+				<p id="' . self::$messageId . '">' . $message . '</p>
 			</fieldset>
 		</form>
 		<br>

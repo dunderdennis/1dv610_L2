@@ -25,3 +25,6 @@ class UsernameIsMissingException extends \Exception
 
 class WrongCredentialsException extends \Exception
 { }
+
+class NotANumberException extends \Exception
+{ }

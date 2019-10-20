@@ -5,15 +5,21 @@ session_start();
 
 require_once('controller/Controller.php');
 
+
 require_once('model/UserStorage.php');
 require_once('model/User.php');
+
 require_once('model/LoginData.php');
 require_once('model/RegisterData.php');
-require_once('model/RMCalcData.php');
+
 require_once('model/SessionHandler.php');
+
 require_once('model/RegistrationValidator.php');
 require_once('model/LoginValidator.php');
+require_once('model/RMValidator.php');
+
 require_once('model/Exceptions.php');
+
 
 require_once('view/PageView.php');
 require_once('view/LoginView.php');
@@ -37,6 +43,7 @@ class Application
         $this->modules->sessionHandler = new \model\SessionHandler();
         $this->modules->loginValidator = new \model\LoginValidator();
         $this->modules->registrationValidator = new \model\RegistrationValidator();
+        $this->modules->rmValidator = new \model\RMValidator();
 
         $this->modules->pageView = new \view\PageView();
         $this->modules->loginView = new \view\LoginView();

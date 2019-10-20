@@ -11,15 +11,18 @@ class Controller
     private $sessionHandler;
     private $loginValidator;
     private $registrationValidator;
+    private $rmValidator;
 
     private $pageView;
     private $loginView;
     private $registerView;
     private $dateTimeView;
+    private $rmCalcView;
 
     private $userIsLoggedIn;
 
     private $message = '';
+    private $rmMessage = '';
     private $userWantsToRegister = false;
     private $loginErrorMessage = '';
     private $registerErrorMessage = '';
@@ -31,6 +34,7 @@ class Controller
         $this->sessionHandler = $modules->sessionHandler;
         $this->loginValidator = $modules->loginValidator;
         $this->registrationValidator = $modules->registrationValidator;
+        $this->rmValidator = $modules->rmValidator;
 
         $this->pageView = $modules->pageView;
         $this->loginView = $modules->loginView;
@@ -65,6 +69,10 @@ class Controller
         if ($this->registerView->userPressesRegisterButton()) {
             $this->doRegisterAttempt();
         }
+
+        if ($this->rmCalcView->userPressesSubmitButton()) {
+            $this->doRMCalcAttempt();
+        }
     }
 
     private function doRenderPage(): void
@@ -88,7 +96,7 @@ class Controller
             $this->resetLoginMessage();
         }
 
-        $body .= $this->rmCalcView->getHTML();
+        $body .= $this->rmCalcView->getHTML($this->rmMessage);
 
         $body .= $this->dateTimeView->getHTML();
 
@@ -179,6 +187,16 @@ class Controller
             $this->sessionHandler->setSessionMessage('Registered new user.');
 
             header('location: ?');
+        }
+    }
+
+    private function doRMCalcAttempt(): void
+    {
+        try {
+            $this->rmValidator->checkIfValueIsNumber($this->rmCalcView->getPostWeight());
+            $this->rmValidator->checkIfValueIsNumber($this->rmCalcView->getPostReps());
+        } catch (\Exception $e) {
+            $this->rmMessage = $e->getMessage();
         }
     }
 
