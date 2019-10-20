@@ -9,6 +9,7 @@ require_once('model/UserStorage.php');
 require_once('model/User.php');
 require_once('model/LoginData.php');
 require_once('model/RegisterData.php');
+require_once('model/RMCalcData.php');
 require_once('model/SessionHandler.php');
 require_once('model/RegistrationValidator.php');
 require_once('model/LoginValidator.php');
@@ -17,6 +18,7 @@ require_once('model/Exceptions.php');
 require_once('view/PageView.php');
 require_once('view/LoginView.php');
 require_once('view/RegisterView.php');
+require_once('view/RMCalcView.php');
 require_once('view/DateTimeView.php');
 
 
@@ -39,6 +41,7 @@ class Application
         $this->modules->pageView = new \view\PageView();
         $this->modules->loginView = new \view\LoginView();
         $this->modules->registerView = new \view\RegisterView();
+        $this->modules->rmCalcView = new \view\RMCalcView();
         $this->modules->dateTimeView = new \view\DateTimeView();
 
         // Pass on the modules object, to avoid having this line being far too long

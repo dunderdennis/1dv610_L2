@@ -35,6 +35,7 @@ class Controller
         $this->pageView = $modules->pageView;
         $this->loginView = $modules->loginView;
         $this->registerView = $modules->registerView;
+        $this->rmCalcView =  $modules->rmCalcView;
         $this->dateTimeView = $modules->dateTimeView;
 
         $this->userIsLoggedIn = $this->sessionHandler->userIsLoggedInBySession();
@@ -86,6 +87,8 @@ class Controller
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
         }
+
+        $body .= $this->rmCalcView->getHTML();
 
         $body .= $this->dateTimeView->getHTML();
 

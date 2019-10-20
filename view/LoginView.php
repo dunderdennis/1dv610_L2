@@ -37,7 +37,7 @@ class LoginView
 		return $ret;
 	}
 
-	public function clearUserCookies(): void // kolla över den här funktionen sen. behövs verkligen båda kodraderna?
+	public function clearUserCookies(): void
 	{
 		unset($_COOKIE[self::$cookieUsername]);
 		setcookie(self::$cookieUsername, null, -1);
