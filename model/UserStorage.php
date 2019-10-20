@@ -23,8 +23,6 @@ class UserStorage
         $userToLogin = new User($username, $password);
 
         $this->checkUserCredentials($userToLogin);
-
-        $this->setSessionUser($userToLogin->getUsername());
     }
 
     public function checkUserCredentials(\model\User $userToLogin): void

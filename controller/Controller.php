@@ -4,6 +4,8 @@ namespace controller;
 
 class Controller
 {
+    private static $welcomeMessage = 'Welcome';
+
     private $userStorage;
     private $sessionHandler;
     private $loginValidator;
@@ -78,6 +80,7 @@ class Controller
             // Gather and display the session message, if there is one.
             if ($this->sessionHandler->sessionMessageIsSet()) {
                 $this->message = $this->sessionHandler->getAndResetSessionMessage();
+                var_dump($this->message);
             }
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
@@ -109,8 +112,9 @@ class Controller
             try {
                 $this->userStorage->logInUser($loginData);
 
+                $this->sessionHandler->setSessionUser($username);
+                $this->message = self::$welcomeMessage;
                 $this->userIsLoggedIn = true;
-                $this->message = 'Welcome';
             } catch (\Exception $e) {
                 $this->loginErrorMessage = $e->getMessage();
                 $this->message = $this->loginErrorMessage;
@@ -118,15 +122,13 @@ class Controller
         } else {
             $this->message = $this->loginErrorMessage;
         }
-
-        $this->sessionHandler->setSessionMessage($this->message);
     }
 
     private function doLogout(): void
     {
         // Clear session and cookies for user.
         $this->loginView->clearUserCookies();
-        $this->userStorage->clearSessionUser();
+        $this->sessionHandler->clearSessionUser();
 
         header('location: ?'); // Re-render the page after the application has updated its data.
     }
