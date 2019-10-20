@@ -27,7 +27,7 @@ class RegisterView
 			// The view retains the entered username if registering fails
 			$usernameFieldValue = '';
 			if ($this->postHasUsername()) {
-				$usernameFieldValue = $this->getPostUsername();
+				$usernameFieldValue = strip_tags($this->getPostUsername());
 			}
 			$ret .= $this->getRegisterFormHTML($message, $usernameFieldValue);
 		}
@@ -60,11 +60,11 @@ class RegisterView
 		return $_POST[self::$repeatPassword];
 	}
 
-
-	private function postHasUsername(): bool
+	public function postHasUsername(): bool
 	{
 		return isset($_POST[self::$username]);
 	}
+
 
 	private function getRegisterLinkHTML(bool $userWantsToRegister): string
 	{

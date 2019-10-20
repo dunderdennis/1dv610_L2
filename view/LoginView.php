@@ -25,8 +25,8 @@ class LoginView
 		if ($userIsLoggedIn || $this->userIsLoggedInWithCookies()) {
 			$ret .= $this->getLogoutButtonHTML($message);
 		} else {
-			// The view retains the entered username if login fails
 			$usernameFieldValue = '';
+			// The view retains the entered username if login fails
 			if ($this->postHasUsername()) {
 				$usernameFieldValue = $this->getPostUsername();
 			}
@@ -148,29 +148,3 @@ class LoginView
 	';
 	}
 }
-
-	// $userIsLoggedIn = false;
-	// 
-	// if ($this->userCookieIsSet()) {
-	// 	$this->getCookieUserCredentials();
-	// 	$userIsLoggedIn = true;
-	// }
-
-	// public function loadUserFromCookies(string $cookieName, string $cookiePassword): \model\User
-	// {
-
-
-	//     $userKey = self::$userKey;
-
-	//     // If the user exists in the session object, return it.
-	//     if (isset($this->session->$userKey)) {
-	//         return $this->session->$userKey;
-	//     }
-
-	//     if (isset($_COOKIE[$cookieName]) && isset($_COOKIE[$cookiePassword])) {
-	//         $_SESSION['showWelcomeCookie'] = true;
-	//         return new User($_COOKIE[$cookieName], $_COOKIE[$cookiePassword]);
-	//     } else {
-	//         return new User('', '');
-	//     }
-	// }
