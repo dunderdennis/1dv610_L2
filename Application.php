@@ -1,5 +1,8 @@
 <?php
 
+session_start();
+
+
 require_once('controller/Controller.php');
 
 require_once('model/UserStorage.php');

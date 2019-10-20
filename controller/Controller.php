@@ -77,9 +77,7 @@ class Controller
         if (!$this->userWantsToRegister) {
             // Gather and display the session message, if there is one.
             if ($this->sessionHandler->sessionMessageIsSet()) {
-                // $this->message = $this->sessionHandler->getAndResetSessionMessage();
-                $keps = $this->sessionHandler->getAndResetSessionMessage();
-                var_dump($keps);
+                $this->message = $this->sessionHandler->getAndResetSessionMessage();
             }
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
@@ -104,19 +102,16 @@ class Controller
             $this->loginValidator->checkIfPasswordIsEmpty($password);
         } catch (\model\UsernameIsMissingException | \model\PasswordIsMissingException $e) {
             $this->loginErrorMessage = $e->getMessage();
-            $this->sessionHandler->setSessionMessage($this->loginErrorMessage);
-            var_dump($this->loginErrorMessage);
-            // TILLS HIT ALLT OK
         }
 
         // If error message is empty, login is OK and the application proceeds to try and login the user.
-        if ($this->loginErrorMessage = '') {
+        if (strlen($this->loginErrorMessage) == 0) {
             try {
                 $this->userStorage->logInUser($loginData);
 
                 $this->userIsLoggedIn = true;
                 $this->message = 'Welcome';
-            } catch (\model\WrongCredentialsException $e) {
+            } catch (\Exception $e) {
                 $this->loginErrorMessage = $e->getMessage();
                 $this->message = $this->loginErrorMessage;
             }
@@ -172,7 +167,7 @@ class Controller
         }
 
         // If error message is empty, registration is OK and the application proceeds to register the new user.
-        if ($this->registerErrorMessage == '') {
+        if (strlen($this->registerErrorMessage) == 0) {
             $this->userStorage->registerUser($registerData);
             $this->sessionHandler->setSessionMessage('Registered new user.');
 

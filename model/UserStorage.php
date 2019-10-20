@@ -23,6 +23,7 @@ class UserStorage
         $userToLogin = new User($username, $password);
 
         $this->checkUserCredentials($userToLogin);
+
         $this->setSessionUser($userToLogin->getUsername());
     }
 
@@ -63,7 +64,8 @@ class UserStorage
         file_put_contents(self::$url, $this->userDatabase, FILE_USE_INCLUDE_PATH);
     }
 
-    public function getUserDatabase() {
+    public function getUserDatabase()
+    {
         return $this->userDatabase;
     }
 
