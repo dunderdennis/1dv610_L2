@@ -89,6 +89,7 @@ class Controller
 
         $loginData = new \model\LoginData($username, $password, $keepLoggedInChecked);
 
+        // Try for and catch login errors
         try {
             $this->userStorage->logInUser($loginData);
 
@@ -102,10 +103,11 @@ class Controller
 
     private function doLogout(): void
     {
+        // Clear session and cookies for user.
         $this->loginView->clearUserCookies();
         $this->userStorage->clearSessionUser();
 
-        header('location: ?'); // <- header location, OK?
+        header('location: ?'); // Re-render the page after the application has updated its data.
     }
 
     private function doRegisterAttempt(): void
@@ -116,6 +118,7 @@ class Controller
 
         $registerData = new \model\RegisterData($username, $password, $repeatedPassword);
 
+        // Try for and registering errors
         try {
             $this->userStorage->registerUser($registerData);
 
@@ -123,7 +126,7 @@ class Controller
             $this->userStorage->setSessionMessage('Registered new user.');
             header('location: ?');
         } catch (\Exception $e) {
-            $this->registerMessage = $e->getMessage();
+            $this->registerMessage .= $e->getMessage();
         }
     }
 

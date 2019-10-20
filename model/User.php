@@ -4,9 +4,6 @@ namespace model;
 
 class User
 {
-    private static $minUsernameLength = 2;
-    private static $minPasswordLength = 6;
-
     private $username;
     private $password;
 

@@ -15,13 +15,7 @@ class LoginView
 	private static $keepLoggedIn = 		self::viewID . '::KeepMeLoggedIn';
 	private static $messageId = 		self::viewID . '::Message';
 
-	private $message;
-
-
-	public function __construct()
-	{
-		$this->message = '';
-	}
+	private $message = '';
 
 
 	public function getHTML(bool $userIsLoggedIn, string $message): string
@@ -33,7 +27,7 @@ class LoginView
 		if ($userIsLoggedIn || $this->userIsLoggedInWithCookies()) {
 			$ret .= $this->getLogoutButtonHTML($this->message);
 		} else {
-			// The view keeps the entered username if login fails
+			// The view retains the entered username if login fails
 			$usernameFieldValue = '';
 			if ($this->postHasUsername()) {
 				$usernameFieldValue = $this->getPostUsername();

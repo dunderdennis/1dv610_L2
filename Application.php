@@ -23,7 +23,7 @@ class Application
     public function __construct()
     {
         // Store all the modules of the application in an object
-        $this->modules = new stdClass();
+        $this->modules = new \stdClass();
 
         $this->modules->userStorage = new \model\UserStorage();
 

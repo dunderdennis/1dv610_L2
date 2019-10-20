@@ -14,13 +14,7 @@ class RegisterView
 
 	private static $registerRequest = 'register';
 
-	private $message;
-
-
-	public function __construct()
-	{
-		$this->message = '';
-	}
+	private $message = '';
 
 
 	public function getHTML(bool $userWantsToRegister, string $message): string
@@ -30,7 +24,7 @@ class RegisterView
 		$this->message = $message;
 
 		if ($userWantsToRegister) {
-			// The view keeps the entered username if registering fails
+			// The view retains the entered username if registering fails
 			$usernameFieldValue = '';
 			if ($this->postHasUsername()) {
 				$usernameFieldValue = $this->getPostUsername();
@@ -65,6 +59,7 @@ class RegisterView
 	{
 		return $_POST[self::$repeatPassword];
 	}
+
 
 	private function postHasUsername(): bool
 	{

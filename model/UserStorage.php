@@ -4,6 +4,9 @@ namespace model;
 
 class UserStorage // kanske lyfta ut SessionHandler
 {
+    private static $minUsernameLength = 2;
+    private static $minPasswordLength = 6;
+
     private static $userKey =  __CLASS__ .  "::User";
     private static $messageKey =  __CLASS__ .  "::Message";
     private static $url = 'UserDatabase.json';
@@ -33,9 +36,9 @@ class UserStorage // kanske lyfta ut SessionHandler
         $username = $userToSearchFor->getUsername();
         $password = $userToSearchFor->getPassword();
 
-        foreach ($this->userDatabase as $user) {
-            if ($username == $user->username && $password == $user->password) {
-                return; // <- kolla upp detta
+        foreach ($this->userDatabase as $dbUser) {
+            if ($username == $dbUser->username && $password == $dbUser->password) {
+                return; // If user credentials is correct, return from this method.
             }
         }
         throw new \model\WrongCredentialsException('Wrong name or password');
@@ -47,31 +50,33 @@ class UserStorage // kanske lyfta ut SessionHandler
         $password = $registerData->password;
         $repeatedPassword = $registerData->repeatedPassword;
 
+        // Error handling, through instancing a User and calling the "checkUser..."-method.
         $userToRegister = new User($username, $password);
-
-        $this->checkUserRegisteringForErrors($userToRegister, $repeatedPassword);
+        $this->checkUserRegisteringForErrors($registerData);
 
         $this->saveUserToJSONDatabase($userToRegister);
     }
 
-    public function checkUserRegisteringForErrors(\model\User $userToRegister, string $repeatedPassword): void
+    public function checkUserRegisteringForErrors(\model\RegisterData $registerData): void
     {
-        $username = $userToRegister->getUsername();
-        $password = $userToRegister->getPassword();
+        $username = $registerData->username;
+        $password = $registerData->password;
+        $repeatedPassword = $registerData->repeatedPassword;
 
         $strippedUsername = strip_tags($username);
 
-        // Look if a user with the same username already exists
-        foreach ($this->userDatabase as $user) {
-            if ($username == $user->username) {
+        // Check if a user with the same username already exists
+        foreach ($this->userDatabase as $dbUser) {
+            if ($username == $dbUser->username) {
                 throw new \model\UserAlreadyExistsException('User exists, pick another username.');
             }
         }
 
-        if (strlen($this->username) < self::$minUsernameLength) {
+        if (strlen($username) < self::$minUsernameLength) {
             throw new \model\TooShortUsernameException('Username needs to be at least ' . self::$minUsernameLength . ' characters.');
-        } else if (strlen($this->password) < self::$minPasswordLength) {
-            throw new \exception\TooShortPasswordException('Password needs to be at least ' . self::$minPasswordLength . ' characters.');
+        }
+        if (strlen($password) < self::$minPasswordLength) {
+            throw new \model\TooShortPasswordException('Password needs to be at least ' . self::$minPasswordLength . ' characters.');
         }
         if ($username != $strippedUsername) {
             throw new \model\UsernameContainsInvalidCharactersException('Username contains invalid characters.');
