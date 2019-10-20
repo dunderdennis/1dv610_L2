@@ -14,3 +14,6 @@ require_once('Application.php');
 
 $app = new Application();
 $app->run();
+
+
+// TODO: Bryt ut SessionHandler, Validator för registering typ

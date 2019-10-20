@@ -10,10 +10,8 @@ class User
 
     public function __construct(string $username, string $password)
     {
-        $this->username = $this->applyFilter($username);
+        $this->username = $username;
         $this->password = $password;
-
-        $this->checkUserDataForErrors();
     }
 
 
@@ -35,20 +33,5 @@ class User
     public function getPassword(): string
     {
         return $this->password;
-    }
-
-
-    private function checkUserDataForErrors(): void
-    {
-        if ($this->username == '') {
-            throw new \model\UsernameIsMissingException('Username is missing');
-        } else if ($this->password == '') {
-            throw new \model\PasswordIsMissingException('Password is missing');
-        }
-    }
-
-    private function applyFilter(string $rawInput): string
-    {
-        return trim(htmlentities($rawInput));
     }
 }

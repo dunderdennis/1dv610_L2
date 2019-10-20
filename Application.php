@@ -6,6 +6,9 @@ require_once('model/UserStorage.php');
 require_once('model/User.php');
 require_once('model/LoginData.php');
 require_once('model/RegisterData.php');
+require_once('model/SessionHandler.php');
+require_once('model/RegistrationValidator.php');
+require_once('model/LoginValidator.php');
 require_once('model/Exceptions.php');
 
 require_once('view/PageView.php');
@@ -26,6 +29,8 @@ class Application
         $this->modules = new \stdClass();
 
         $this->modules->userStorage = new \model\UserStorage();
+        $this->modules->sessionHandler = new \model\SessionHandler();
+        $this->modules->registrationValidator = new \model\RegistrationValidator();
 
         $this->modules->pageView = new \view\PageView();
         $this->modules->loginView = new \view\LoginView();

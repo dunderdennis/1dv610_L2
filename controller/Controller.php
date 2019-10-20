@@ -5,6 +5,8 @@ namespace controller;
 class Controller
 {
     private $userStorage;
+    private $sessionHandler;
+    private $registrationValidator;
 
     private $pageView;
     private $loginView;
@@ -21,13 +23,15 @@ class Controller
     public function __construct(object $modules)
     {
         $this->userStorage = $modules->userStorage;
-
+        $this->sessionHandler = $modules->sessionHandler;
+        $this->registrationValidator = $modules->registrationValidator;
+        
         $this->pageView = $modules->pageView;
         $this->loginView = $modules->loginView;
         $this->registerView = $modules->registerView;
         $this->dateTimeView = $modules->dateTimeView;
 
-        $this->userIsLoggedIn = $this->userStorage->userIsLoggedInBySession();
+        $this->userIsLoggedIn = $this->sessionHandler->userIsLoggedInBySession();
     }
 
 
@@ -69,8 +73,8 @@ class Controller
         // If user wants to register, don't render the LoginView.
         if (!$this->userWantsToRegister) {
             // Gather and display the session message, if there is one.
-            if ($this->userStorage->sessionMessageIsSet()) {
-                $this->message = $this->userStorage->getAndResetSessionMessage();
+            if ($this->sessionHandler->sessionMessageIsSet()) {
+                $this->message = $this->sessionHandler->getAndResetSessionMessage();
             }
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
@@ -118,16 +122,27 @@ class Controller
 
         $registerData = new \model\RegisterData($username, $password, $repeatedPassword);
 
-        // Try for and registering errors
-        try {
-            $this->userStorage->registerUser($registerData);
-
-            // This code executes ONLY if registering completed successfully.
-            $this->userStorage->setSessionMessage('Registered new user.');
-            header('location: ?');
-        } catch (\Exception $e) {
+        // Try for and catch registering errors
+        try { $this->registrationValidator->checkForTooShortUsername($username); } catch (\Exception $e) {
             $this->registerMessage .= $e->getMessage();
         }
+        try { $this->registrationValidator->checkForTooShortPassword($password); } catch (\Exception $e) {
+            $this->registerMessage .= $e->getMessage();
+        }
+        try { $this->registrationValidator->checkForUserAlreadyExists($this->userStorage, $username); } catch (\Exception $e) {
+            $this->registerMessage .= $e->getMessage();
+        }
+        try { $this->registrationValidator->checkForUsernameContainsInvalidCharacters($username); } catch (\Exception $e) {
+            $this->registerMessage .= $e->getMessage();
+        }
+        try { $this->registrationValidator->checkForPasswordsDoNotMatch($password, $repeatedPassword); } catch (\Exception $e) {
+            $this->registerMessage .= $e->getMessage();
+        }
+
+
+        $this->userStorage->registerUser($registerData);
+        $this->sessionHandler->setSessionMessage('Registered new user.');
+        header('location: ?');
     }
 
     private function resetLoginMessage(): void
