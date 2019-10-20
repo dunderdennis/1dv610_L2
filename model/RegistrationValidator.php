@@ -11,14 +11,14 @@ class RegistrationValidator
     public function checkForTooShortUsername(string $username): void
     {
         if (strlen($username) < self::$minUsernameLength) {
-            throw new \model\TooShortUsernameException('Username needs to be at least ' . self::$minUsernameLength . ' characters.');
+            throw new \model\TooShortUsernameException('Username has too few characters, at least ' . self::$minUsernameLength . ' characters.');
         }
     }
 
     public function checkForTooShortPassword(string $password): void
     {
         if (strlen($password) < self::$minPasswordLength) {
-            throw new \model\TooShortPasswordException('Password needs to be at least ' . self::$minPasswordLength . ' characters.');
+            throw new \model\TooShortPasswordException('Password has too few characters, at least ' . self::$minPasswordLength . ' characters.');
         }
     }
 
