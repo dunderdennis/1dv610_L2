@@ -2,7 +2,7 @@
 
 namespace model;
 
-class UserStorage
+class UserStorage // kanske lyfta ut SessionHandler
 {
     private static $userKey =  __CLASS__ .  "::User";
     private static $messageKey =  __CLASS__ .  "::Message";
@@ -35,7 +35,7 @@ class UserStorage
 
         foreach ($this->userDatabase as $user) {
             if ($username == $user->username && $password == $user->password) {
-                return;
+                return; // <- kolla upp detta
             }
         }
         throw new \model\WrongCredentialsException('Wrong name or password');
@@ -68,6 +68,11 @@ class UserStorage
             }
         }
 
+        if (strlen($this->username) < self::$minUsernameLength) {
+            throw new \model\TooShortUsernameException('Username needs to be at least ' . self::$minUsernameLength . ' characters.');
+        } else if (strlen($this->password) < self::$minPasswordLength) {
+            throw new \exception\TooShortPasswordException('Password needs to be at least ' . self::$minPasswordLength . ' characters.');
+        }
         if ($username != $strippedUsername) {
             throw new \model\UsernameContainsInvalidCharactersException('Username contains invalid characters.');
         }

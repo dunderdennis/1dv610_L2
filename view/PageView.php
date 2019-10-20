@@ -4,13 +4,6 @@ namespace view;
 
 class PageView
 {
-  // private $request;
-
-  // public function __construct()
-  // {
-  //   $this->request = $_REQUEST;
-  // }
-
   public function echoHTML(string $body): void
   {
     echo "<!DOCTYPE html>

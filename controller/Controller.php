@@ -12,9 +12,10 @@ class Controller
     private $dateTimeView;
 
     private $userIsLoggedIn;
-    private $message;
-    private $userWantsToRegister;
-    private $registerMessage;
+
+    private $message = '';
+    private $userWantsToRegister = false;
+    private $registerMessage = '';
 
 
     public function __construct(object $modules)
@@ -27,13 +28,10 @@ class Controller
         $this->dateTimeView = $modules->dateTimeView;
 
         $this->userIsLoggedIn = $this->userStorage->userIsLoggedInBySession();
-        $this->message = '';
-        $this->userWantsToRegister = false;
-        $this->registerMessage = '';
     }
 
 
-    public function runApplication(): void
+    public function run(): void
     {
         $this->listenForUserInputs();
 
@@ -107,7 +105,7 @@ class Controller
         $this->loginView->clearUserCookies();
         $this->userStorage->clearSessionUser();
 
-        header('location: ?');
+        header('location: ?'); // <- header location, OK?
     }
 
     private function doRegisterAttempt(): void
