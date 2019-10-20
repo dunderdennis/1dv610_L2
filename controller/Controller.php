@@ -5,6 +5,7 @@ namespace controller;
 class Controller
 {
     private static $welcomeMessage = 'Welcome';
+    private static $byeMessage = 'Bye bye!';
 
     private $userStorage;
     private $sessionHandler;
@@ -50,10 +51,10 @@ class Controller
 
     private function listenForUserInputs(): void
     {
-        if ($this->loginView->userPressesLoginButton()) {
+        if ($this->loginView->userPressesLoginButton() && !$this->userIsLoggedIn) {
             $this->doLoginAttempt();
         }
-        if ($this->loginView->userPressesLogoutButton()) {
+        if ($this->loginView->userPressesLogoutButton() && $this->userIsLoggedIn) {
             $this->doLogout();
         }
 
@@ -80,8 +81,8 @@ class Controller
             // Gather and display the session message, if there is one.
             if ($this->sessionHandler->sessionMessageIsSet()) {
                 $this->message = $this->sessionHandler->getAndResetSessionMessage();
-                var_dump($this->message);
             }
+
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
         }
@@ -113,7 +114,7 @@ class Controller
                 $this->userStorage->logInUser($loginData);
 
                 $this->sessionHandler->setSessionUser($username);
-                $this->message = self::$welcomeMessage;
+                $this->sessionHandler->setSessionMessage(self::$welcomeMessage);
                 $this->userIsLoggedIn = true;
             } catch (\Exception $e) {
                 $this->loginErrorMessage = $e->getMessage();
@@ -130,7 +131,8 @@ class Controller
         $this->loginView->clearUserCookies();
         $this->sessionHandler->clearSessionUser();
 
-        header('location: ?'); // Re-render the page after the application has updated its data.
+        $this->userIsLoggedIn = false;
+        $this->sessionHandler->setSessionMessage(self::$byeMessage);
     }
 
     private function doRegisterAttempt(): void
