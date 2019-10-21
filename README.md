@@ -7,7 +7,7 @@ There are some things which are not implemented, Test cases 1.8, 3.2, 3.4, 3.6, 
 
 As for the actual code, while expanding the application with the extra feature (described below), the main controller module got a bit too large for my liking. As of right now, it has 237 lines of code which is not catastrophic but certainly not optimal. Not great, not terrible.
 
-There are also a few bugs, mostly regarding "Welcome"-messages. These are annoying but fortunately not application-breaking. I'd definitely fix these in a future iteration of this application.
+There are also a few bugs, mostly regarding "Welcome"-messages. These are annoying but fortunately not application-breaking. I'd definitely fix these in a future iteration of this application. As of right now, the user also is *always* logged in by cookies as well.
 
 # Extra feature: 1RM Maximum calculator
 
