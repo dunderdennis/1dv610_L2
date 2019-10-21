@@ -6,6 +6,7 @@ class SessionHandler
 {
     private static $userKey =  __CLASS__ .  "::User";
     private static $messageKey =  __CLASS__ .  "::Message";
+    private static $cookieMessageKey =  __CLASS__ .  "::CookieMessage";
     private static $weightKey = __CLASS__ . "::Weight";
     private static $repsKey = __CLASS__ . "::Reps";
 
@@ -53,8 +54,10 @@ class SessionHandler
 
     public function setSessionRMData(string $weight, string $reps): void
     {
-        $_SESSION[$this->getSessionUser() . self::$weightKey] = $weight;
-        $_SESSION[$this->getSessionUser() . self::$repsKey] = $reps;
+        if ($this->sessionUserIsSet()) {
+            $_SESSION[$this->getSessionUser() . self::$weightKey] = $weight;
+            $_SESSION[$this->getSessionUser() . self::$repsKey] = $reps;
+        }
     }
 
     public function getSessionRMData(): \model\RMCalcData
@@ -75,5 +78,15 @@ class SessionHandler
     {
         unset($_SESSION[$this->getSessionUser() . self::$weightKey]);
         unset($_SESSION[$this->getSessionUser() . self::$repsKey]);
+    }
+
+    public function setSessionCookieMessageHasShown(bool $bool): void
+    {
+        $_SESSION[self::$cookieMessageKey] = $bool;
+    }
+
+    public function sessionCookieMessageHasShown(): bool
+    {
+        return isset($_SESSION[self::$cookieMessageKey]);
     }
 }

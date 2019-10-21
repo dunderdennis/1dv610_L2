@@ -68,11 +68,8 @@ class LoginView
 
 	public function clearUserCookies(): void
 	{
-		unset($_COOKIE[self::$cookieUsername]);
-		setcookie(self::$cookieUsername, null, -1);
-
-		unset($_COOKIE[self::$cookiePassword]);
-		setcookie(self::$cookiePassword, null, -1);
+		setcookie(self::$cookieUsername, "", time() - 3600);
+		setcookie(self::$cookiePassword, "", time() - 3600);
 	}
 
 	public function userPressesLoginButton(): bool

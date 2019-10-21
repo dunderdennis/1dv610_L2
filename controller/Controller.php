@@ -20,8 +20,7 @@ class Controller
     private $dateTimeView;
     private $rmCalcView;
 
-    private $userIsLoggedIn;
-
+    private $userIsLoggedIn = false;
     private $message = '';
     private $rmMessage = '';
     private $userWantsToRegister = false;
@@ -42,18 +41,30 @@ class Controller
         $this->registerView = $modules->registerView;
         $this->rmCalcView =  $modules->rmCalcView;
         $this->dateTimeView = $modules->dateTimeView;
-
-        $this->userIsLoggedIn = $this->sessionHandler->userIsLoggedInBySession();
     }
 
 
     public function run(): void
     {
+        $this->checkIfUserIsLoggedIn();
+
         $this->listenForUserInputs();
 
         $this->doRenderPage();
     }
 
+    private function checkIfUserIsLoggedIn(): void
+    {
+        $this->userIsLoggedIn = $this->sessionHandler->userIsLoggedInBySession();
+
+        if ($this->loginView->userIsLoggedInWithCookies() && !$this->sessionHandler->sessionCookieMessageHasShown()) {
+            $this->message = self::$welcomeWithCookies;
+            
+            $this->sessionHandler->setSessionCookieMessageHasShown(true);
+
+            $this->userIsLoggedIn = true;
+        }
+    }
 
     private function listenForUserInputs(): void
     {
@@ -92,10 +103,6 @@ class Controller
             if ($this->sessionHandler->sessionMessageIsSet()) {
                 $this->message = $this->sessionHandler->getAndResetSessionMessage();
             }
-
-            if ($this->loginView->userIsLoggedInWithCookies()) {
-                $this->message = self::$welcomeWithCookies;
-             }
 
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
