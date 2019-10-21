@@ -1,7 +1,15 @@
 # 1DV610 Laboration 2 & 3
 Repo for laboration 2 and 3 in the course 1dv610 at Linnaeus University, Kalmar, Sweden.
 
-## Extra feature: 1RM Maximum calculator
+### Status
+
+There are some things which are not implemented, Test cases 1.8, 3.2, 3.4, 3.6, 4.10.
+
+As for the actual code, while expanding the application with the extra feature (described below), the main controller module got a bit too large for my liking. As of right now, it has 237 lines of code which is not catastrophic but certainly not optimal. Not great, not terrible.
+
+There are also a few bugs, mostly regarding "Welcome"-messages. These are annoying but fortunately not application-breaking. I'd definitely fix these in a future iteration of this application. As of right now, the user also is *always* logged in by cookies as well.
+
+# Extra feature: 1RM Maximum calculator
 
 https://en.wikipedia.org/wiki/One-repetition_maximum
 
@@ -34,7 +42,7 @@ A user is authenticated. Ex. UC1, UC3
 ### Output:
  * A table containing the data is shown.
  
-![After Input](images/successful1RM.jpg)
+![After Input](images/successful1RM.JPG)
 
 ***
 
@@ -50,7 +58,7 @@ Make sure calculation cannot happen without entering any fields
  * The text "Entered data must be numeric", is shown.
  * A form for calculating 1RM Max is shown.
 
-![After Input](images/mustBeNumericEmptyFields1RM.jpg)
+![After Input](images/mustBeNumericEmptyFields1RM.JPG)
 
 ***
 
@@ -66,7 +74,7 @@ Make sure calculation cannot happen by entering non-numberic data
  * The text "Entered data must be numeric", is shown.
  * A form for calculating 1RM Max is shown.
 
-![After Input](images/mustBeNumericLetters1RM.jpg)
+![After Input](images/mustBeNumericLetters1RM.JPG)
 
 ***
 ## Test case 6.1: Failed calculation by entering non-numberic data
@@ -81,6 +89,6 @@ Make sure calculation cannot happen by entering non-numberic data
  * A table containing the data is shown.
  
 
-![After Input](images/loggedIn1RM.jpg)
+![After Input](images/loggedIn1RM.JPG)
 
 ***
