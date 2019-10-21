@@ -34,7 +34,7 @@ A user is authenticated. Ex. UC1, UC3
 ### Output:
  * A table containing the data is shown.
  
-![After Input](images/successful1RM.jpg)
+![After Input](images/successful1RM.JPG)
 
 ***
 
@@ -50,7 +50,7 @@ Make sure calculation cannot happen without entering any fields
  * The text "Entered data must be numeric", is shown.
  * A form for calculating 1RM Max is shown.
 
-![After Input](images/mustBeNumericEmptyFields1RM.jpg)
+![After Input](images/mustBeNumericEmptyFields1RM.JPG)
 
 ***
 
@@ -66,7 +66,7 @@ Make sure calculation cannot happen by entering non-numberic data
  * The text "Entered data must be numeric", is shown.
  * A form for calculating 1RM Max is shown.
 
-![After Input](images/mustBeNumericLetters1RM.jpg)
+![After Input](images/mustBeNumericLetters1RM.JPG)
 
 ***
 ## Test case 6.1: Failed calculation by entering non-numberic data
@@ -81,6 +81,6 @@ Make sure calculation cannot happen by entering non-numberic data
  * A table containing the data is shown.
  
 
-![After Input](images/loggedIn1RM.jpg)
+![After Input](images/loggedIn1RM.JPG)
 
 ***
