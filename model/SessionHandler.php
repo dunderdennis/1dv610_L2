@@ -10,6 +10,7 @@ class SessionHandler
     private static $weightKey = __CLASS__ . "::Weight";
     private static $repsKey = __CLASS__ . "::Reps";
 
+
     public function setSessionMessage(string $message): void
     {
         $_SESSION[self::$messageKey] = $message;
