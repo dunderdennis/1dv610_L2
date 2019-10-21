@@ -6,6 +6,7 @@ class Controller
 {
     private static $welcomeMessage = 'Welcome';
     private static $byeMessage = 'Bye bye!';
+    private static $welcomeWithCookies = 'Welcome back with cookie';
 
     private $userStorage;
     private $sessionHandler;
@@ -92,6 +93,10 @@ class Controller
                 $this->message = $this->sessionHandler->getAndResetSessionMessage();
             }
 
+            if ($this->loginView->userIsLoggedInWithCookies()) {
+                $this->message = self::$welcomeWithCookies;
+             }
+
             $body .= $this->loginView->getHTML($this->userIsLoggedIn, $this->message);
             $this->resetLoginMessage();
         }
@@ -132,6 +137,7 @@ class Controller
 
                 $this->sessionHandler->setSessionUser($username);
                 $this->sessionHandler->setSessionMessage(self::$welcomeMessage);
+                $this->loginView->setUserCookies($username);
                 $this->userIsLoggedIn = true;
             } catch (\Exception $e) {
                 $this->loginErrorMessage = $e->getMessage();

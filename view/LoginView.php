@@ -37,13 +37,9 @@ class LoginView
 		return $ret;
 	}
 
-	public function clearUserCookies(): void
+	public function userIsLoggedInWithCookies(): bool
 	{
-		unset($_COOKIE[self::$cookieUsername]);
-		setcookie(self::$cookieUsername, null, -1);
-
-		unset($_COOKIE[self::$cookiePassword]);
-		setcookie(self::$cookiePassword, null, -1);
+		return isset($_COOKIE[self::$cookieUsername]) && isset($_COOKIE[self::$cookiePassword]);
 	}
 
 	public function getCookieUser(): \model\User
@@ -57,6 +53,26 @@ class LoginView
 		);
 
 		return new \model\User($username, $password);
+	}
+
+	public function setUserCookies(string $username): void
+	{
+		$thirtyDays = time() + 60 * 60 * 24 * 30;
+
+		setcookie(self::$cookieUsername, $username, $thirtyDays);
+
+		$randString = substr(md5(rand()), 0, 40);
+
+		setcookie(self::$cookiePassword, $randString, $thirtyDays);
+	}
+
+	public function clearUserCookies(): void
+	{
+		unset($_COOKIE[self::$cookieUsername]);
+		setcookie(self::$cookieUsername, null, -1);
+
+		unset($_COOKIE[self::$cookiePassword]);
+		setcookie(self::$cookiePassword, null, -1);
 	}
 
 	public function userPressesLoginButton(): bool
@@ -89,22 +105,6 @@ class LoginView
 		return isset($_POST[self::$username]);
 	}
 
-	public function setUserCookies(\model\User $userToLogin): void
-	{
-		$thirtyDays = time() + 60 * 60 * 24 * 30;
-
-		setcookie(self::$cookieUsername, $userToLogin->getUsername(), $thirtyDays);
-
-		$randString = substr(md5(rand()), 0, 40);
-
-		setcookie(self::$cookiePassword, $randString, $thirtyDays);
-	}
-
-
-	private function userIsLoggedInWithCookies(): bool
-	{
-		return isset($_COOKIE[self::$cookieUsername]) && isset($this->cookie[self::$cookiePassword]);
-	}
 
 	private function getLoggedInHTML(bool $userIsLoggedIn): string
 	{
