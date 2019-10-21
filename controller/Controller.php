@@ -96,7 +96,13 @@ class Controller
             $this->resetLoginMessage();
         }
 
-        $body .= $this->rmCalcView->getHTML($this->rmMessage);
+        $rmData = new \model\RMCalcData('', '');
+        // If rmCalcData is saved in the session and user is logged in, get it        
+        if ($this->sessionHandler->rmDataIsSet() && $this->userIsLoggedIn) {
+            $rmData = $this->sessionHandler->getSessionRMData();
+        }
+
+        $body .= $this->rmCalcView->getHTML($rmData, $this->rmMessage);
 
         $body .= $this->dateTimeView->getHTML();
 
@@ -192,9 +198,14 @@ class Controller
 
     private function doRMCalcAttempt(): void
     {
+        $weight = $this->rmCalcView->getPostWeight();
+        $reps = $this->rmCalcView->getPostReps();
+
         try {
-            $this->rmValidator->checkIfValueIsNumber($this->rmCalcView->getPostWeight());
-            $this->rmValidator->checkIfValueIsNumber($this->rmCalcView->getPostReps());
+            $this->rmValidator->checkIfValueIsNumber($weight);
+            $this->rmValidator->checkIfValueIsNumber($reps);
+
+            $this->sessionHandler->setSessionRMData($weight, $reps);
         } catch (\Exception $e) {
             $this->rmMessage = $e->getMessage();
         }

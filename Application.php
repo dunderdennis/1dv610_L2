@@ -11,6 +11,7 @@ require_once('model/User.php');
 
 require_once('model/LoginData.php');
 require_once('model/RegisterData.php');
+require_once('model/RMCalcData.php');
 
 require_once('model/SessionHandler.php');
 

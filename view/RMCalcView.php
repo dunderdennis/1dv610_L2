@@ -12,20 +12,25 @@ class RMCalcView
 	private static $messageId = self::viewID . '::Message';
 
 
-	public function getHTML(string $message): string
+	public function getHTML(\model\RMCalcData $rmData, string $message): string
 	{
 		$ret = "<h3>1RM Calculator</h3>
 		<a href='https://en.wikipedia.org/wiki/One-repetition_maximum'>What's a 1RM? (wikipedia)</a>
 		<br><br>";
 
-		$ret .= $this->getRMCalcFormHTML($message);
+		$weight = '';
+		$reps = '';
 
 		if ($this->postIsSet()) {
 			$weight = $this->getPostWeight();
 			$reps = $this->getPostReps();
-
-			$ret .= $this->getTableHTML($weight, $reps);
+		} else if (strlen($rmData->weight) > 0  && strlen($rmData->reps) > 0) {
+			$weight = $rmData->weight;
+			$reps = $rmData->reps;
 		}
+
+		$ret .= $this->getRMCalcFormHTML($message, $weight, $reps);
+		$ret .= $this->getTableHTML($weight, $reps);
 
 		return $ret;
 	}
@@ -51,7 +56,7 @@ class RMCalcView
 	}
 
 
-	private function getRMCalcFormHTML(string $message): string
+	private function getRMCalcFormHTML(string $message, string $weight, string $reps): string
 	{
 		return '
 		<form method="post"> 
@@ -59,10 +64,10 @@ class RMCalcView
 				<legend>Enter weight and repetitions</legend>
 
 				<label for="' . self::$weight . '">Weight :</label>
-				<input type="text" id="' . self::$weight . '" name="' . self::$weight . '"/>
+				<input type="text" id="' . self::$weight . '" name="' . self::$weight . '" value = "' . $weight . '"/>
 
 				<label for="' . self::$reps . '">Reps :</label>
-				<input type="text" id="' . self::$reps . '" name="' . self::$reps . '" />
+				<input type="text" id="' . self::$reps . '" name="' . self::$reps . '" value = "' . $reps . '"/>
 				
 				<input type="submit" name="' . self::$submit . '" value="Submit" />
 
@@ -73,7 +78,7 @@ class RMCalcView
 	';
 	}
 
-	private function getTableHTML($weight, $reps): string
+	private function getTableHTML(string $weight, string $reps): string
 	{
 		$ret = '<table>';
 
@@ -89,7 +94,7 @@ class RMCalcView
 			$ret .= '
 			<tr>
 				<th>Percentage of 1RM</th>
-				<th>Lifted Weight</th>
+				<th>Weight</th>
 				<th>Repetitions</th>
 			</tr>
 			';
